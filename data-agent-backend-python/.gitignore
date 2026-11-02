@@ -1,0 +1,15 @@
+.env
+*.env
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+dist/
+.DS_Store
+
+# SQLite Databases (Exclude large BIRD benchmark databases, keep only california_schools for tests & demo)
+*.sqlite
+*.sqlite3
+*.db
+!data/dev_20240627/dev_databases/california_schools/california_schools.sqlite

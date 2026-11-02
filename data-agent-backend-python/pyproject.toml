@@ -1,0 +1,39 @@
+[project]
+name = "data-agent-backend-python"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "junhao lyu", email = "z5521544@ad.unsw.edu.au" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg>=0.32.0",
+    "fastapi>=0.115.0",
+    "httpx>=0.27.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langgraph>=0.2.0",
+    "numpy>=2.5.4",
+    "pandas>=3.1.0",
+    "psycopg[binary]>=3.3.6",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=1.4.0",
+    "python-dotenv>=1.0.0",
+    "sqlalchemy>=2.1.5",
+    "sse-starlette>=2.1.0",
+    "uvicorn[standard]>=0.30.0",
+]
+
+[project.scripts]
+data-agent-backend-python = "data_agent_backend_python:main"
+
+[build-system]
+requires = ["uv_build>=0.12.12,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class HumanFeedbackNode:
     """
-    人工反馈接入节点（对应 Kotlin 的 HumanFeedbackNode.kt）。
+    人工反馈接入节点。
     接收用户在前端提交的确认状态（approved: bool）与修改反馈意见（feedback: str）。
     - 修复次数 >= 3 时，强制终止走向 END。
     - 用户确认（approved=True）时，流转至下一步执行控制节点 PLAN_EXECUTE_NODE。

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def feasibility_assessment_edge(state: AgentState) -> str:
     """
-    可行性研判条件路由边（对应 Kotlin 的 FeasibilityAssessmentEdge.kt）。
+    可行性研判条件路由边。
     若大模型研判为《数据分析》，放行至 PLANNER_NODE；否则直接走向 END。
     """
     output = state.get(StateKey.FEASIBILITY_RESULT.value, "")
@@ -23,7 +23,7 @@ def feasibility_assessment_edge(state: AgentState) -> str:
 
 def human_feedback_edge(state: AgentState) -> str:
     """
-    人工反馈条件路由边（对应 Kotlin 的 HumanFeedbackEdge.kt）。
+    人工反馈条件路由边。
     根据 HumanFeedbackNode 写入的 HUMAN_NEXT_NODE 状态，
     路由至 PLAN_EXECUTION、回流至 PLANNER 或终止至 END。
     """
@@ -34,10 +34,9 @@ def human_feedback_edge(state: AgentState) -> str:
 
 def plan_executor_edge(state: AgentState) -> str:
     """
-    计划调度执行条件路由边（对应 Kotlin 的 PlanExecutorEdge.kt）。
+    计划调度执行条件路由边。
     根据 PlanExecuteNode 计算的 PLAN_NEXT_NODE 状态，
-    动态分发至 SQL_GENERATE_NODE、PYTHON_GENERATE_NODE 或终止至 END。
-    若步骤包含后续待开发节点（如 REPORT_GENERATOR_NODE），安全降级走向 END。
+    动态分发至 SQL_GENERATE_NODE、PYTHON_GENERATE_NODE、REPORT_GENERATOR_NODE 或终止至 END。
     """
     next_node = state.get(StateKey.NEXT_NODE.value, END)
     if not next_node or next_node == END:

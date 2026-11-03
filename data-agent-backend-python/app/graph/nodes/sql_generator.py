@@ -28,7 +28,7 @@ def extract_raw_sql(content: str) -> str:
 
 class SqlGeneratorNode:
     """
-    SQL 代码生成节点（对应 Kotlin 的 SqlGeneratorNode.kt）。
+    SQL 代码生成与反思修复节点。
     根据当前执行步骤的指令（instruction），结合高保真精选 Schema 和领域知识，
     生成方言匹配的精准 SQL 查询语句。
     """

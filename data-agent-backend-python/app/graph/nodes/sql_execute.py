@@ -64,7 +64,7 @@ def clean_name(name: str) -> str:
 
 class SqlExecuteNode:
     """
-    SQL 数据库执行节点（对应 Kotlin 的 SqlExecuteNode.kt 与 ResultSetBuilder.kt）。
+    SQL 数据库安全执行节点。
     通过 AST 只读校验与真实数据库物理只读连接执行 SQL 语句，
     并在遇到错误时联动 SQL_GENERATION 触发自纠错重试机制（最多 3 次）。
     """

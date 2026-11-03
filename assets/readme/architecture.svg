@@ -1,0 +1,232 @@
+<svg width="1560" height="880" viewBox="0 0 1560 880" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#7C3AED"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
+    <marker id="arrowSlate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#475569"/>
+    </marker>
+    <style>
+      .font-main { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+      .font-mono { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, Menlo, monospace; }
+    </style>
+  </defs>
+
+  <!-- Outer Canvas -->
+  <rect x="2" y="2" width="1556" height="876" rx="20" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Top Header -->
+  <text x="780" y="46" text-anchor="middle" class="font-main" font-size="23" font-weight="800" fill="#0F172A">Data-Agent 企业级问数智能体宏观系统架构 (Python + LangGraph + FastAPI + Vue 3)</text>
+  <text x="780" y="74" text-anchor="middle" class="font-main" font-size="13.5" font-weight="500" fill="#475569">A2A 流式通信协议  ·  双通道元数据召回  ·  外键图谱剪枝  ·  HITL 人机协同状态机  ·  SQLGlot 三级只读防线  ·  Python 安全隔离沙箱</text>
+  <line x1="32" y1="90" x2="1528" y2="90" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- ==================== COLUMN 1: FRONTEND (Vue 3) ==================== -->
+  <rect x="32" y="106" width="292" height="498" rx="14" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+  <rect x="48" y="120" width="260" height="34" rx="8" fill="#2563EB"/>
+  <text x="178" y="142" text-anchor="middle" class="font-main" font-size="13.5" font-weight="700" fill="#FFFFFF">前端交互层 (Vue 3 + TS + Vite)</text>
+
+  <!-- Card 1.1 -->
+  <rect x="48" y="170" width="260" height="82" rx="10" fill="#FFFFFF" stroke="#BFDBFE" stroke-width="1.2"/>
+  <text x="64" y="194" class="font-main" font-size="13" font-weight="700" fill="#1E40AF">A2UI 节点时间线视图</text>
+  <text x="64" y="216" class="font-main" font-size="11.5" fill="#475569">• 11 类图节点卡片实时轨迹渲染</text>
+  <text x="64" y="236" class="font-main" font-size="11.5" fill="#475569">• Markdown 报告与数据表格预览</text>
+
+  <!-- Card 1.2 -->
+  <rect x="48" y="266" width="260" height="82" rx="10" fill="#FFFFFF" stroke="#BFDBFE" stroke-width="1.2"/>
+  <text x="64" y="290" class="font-main" font-size="13" font-weight="700" fill="#1E40AF">HITL 人机协同审批面板</text>
+  <text x="64" y="312" class="font-main" font-size="11.5" fill="#475569">• 挂起展示多步拆解计划供人工审查</text>
+  <text x="64" y="332" class="font-main" font-size="11.5" fill="#475569">• 一键放行执行 / 填写意见驳回重排</text>
+
+  <!-- Card 1.3 -->
+  <rect x="48" y="362" width="260" height="76" rx="10" fill="#FFFFFF" stroke="#BFDBFE" stroke-width="1.2"/>
+  <text x="64" y="386" class="font-main" font-size="13" font-weight="700" fill="#1E40AF">Agent Card 服务自发现</text>
+  <text x="64" y="407" class="font-mono" font-size="10.5" fill="#334155">GET /.well-known/agent-card.json</text>
+  <text x="64" y="425" class="font-main" font-size="11" fill="#64748B">动态初始化 RPC 端点与流式能力</text>
+
+  <!-- Card 1.4 -->
+  <rect x="48" y="452" width="260" height="136" rx="10" fill="#DBEAFE" stroke="#60A5FA" stroke-width="1.5"/>
+  <text x="64" y="477" class="font-main" font-size="13" font-weight="700" fill="#1E3A8A">A2A 客户端 (@a2a-js/sdk)</text>
+  <text x="64" y="500" class="font-main" font-size="11.2" fill="#1E40AF">• JSON-RPC 2.0 协议请求封装</text>
+  <text x="64" y="521" class="font-main" font-size="11.2" fill="#1E40AF">• SSE 事件流实时订阅与增量合并</text>
+  <text x="64" y="542" class="font-main" font-size="11.2" fill="#1E40AF">• taskId / contextId 会话上下文续接</text>
+  <text x="64" y="564" class="font-mono" font-size="10.5" fill="#2563EB">artifact-update | status-update</text>
+
+  <!-- ==================== ARROWS: COL 1 <-> COL 2 ==================== -->
+  <line x1="324" y1="400" x2="394" y2="400" stroke="#64748B" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowSlate)"/>
+  <text x="360" y="392" text-anchor="middle" class="font-mono" font-size="9.5" fill="#475569">AgentCard</text>
+
+  <line x1="324" y1="492" x2="394" y2="492" stroke="#2563EB" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="360" y="483" text-anchor="middle" class="font-mono" font-size="9.5" font-weight="600" fill="#1D4ED8">JSON-RPC</text>
+
+  <line x1="396" y1="548" x2="326" y2="548" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrowPurple)"/>
+  <text x="360" y="564" text-anchor="middle" class="font-main" font-size="10.5" font-weight="600" fill="#6D28D9">SSE 事件流</text>
+
+  <!-- ==================== COLUMN 2: PROTOCOL LAYER (FastAPI) ==================== -->
+  <rect x="396" y="106" width="292" height="498" rx="14" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="1.5"/>
+  <rect x="412" y="120" width="260" height="34" rx="8" fill="#7C3AED"/>
+  <text x="542" y="142" text-anchor="middle" class="font-main" font-size="13.5" font-weight="700" fill="#FFFFFF">协议接入层 (FastAPI + Uvicorn)</text>
+
+  <!-- Card 2.1 -->
+  <rect x="412" y="170" width="260" height="118" rx="10" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1.2"/>
+  <text x="428" y="195" class="font-main" font-size="13" font-weight="700" fill="#5B21B6">A2A 异步网关路由 (app/a2a)</text>
+  <text x="428" y="218" class="font-mono" font-size="10.5" fill="#334155">POST /a2a/jsonrpc (message/stream)</text>
+  <text x="428" y="240" class="font-main" font-size="11.2" fill="#475569">• Pydantic 2.x 协议报文强类型校验</text>
+  <text x="428" y="261" class="font-main" font-size="11.2" fill="#475569">• 自动区分新提问与 HITL 审批恢复</text>
+
+  <!-- Card 2.2 -->
+  <rect x="412" y="304" width="260" height="124" rx="10" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1.2"/>
+  <text x="428" y="329" class="font-main" font-size="13" font-weight="700" fill="#5B21B6">MemorySaver 状态检查点</text>
+  <text x="428" y="352" class="font-main" font-size="11.2" fill="#475569">• 基于 thread_id 托管会话状态快照</text>
+  <text x="428" y="373" class="font-main" font-size="11.2" fill="#475569">• interrupt_before 现场挂起与保留</text>
+  <text x="428" y="394" class="font-main" font-size="11.2" fill="#475569">• update_state 安全注入人工审批意见</text>
+  <text x="428" y="414" class="font-mono" font-size="10.5" fill="#6D28D9">TaskStore: working / input-required</text>
+
+  <!-- Card 2.3 -->
+  <rect x="412" y="444" width="260" height="144" rx="10" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="1.5"/>
+  <text x="428" y="469" class="font-main" font-size="13" font-weight="700" fill="#4C1D95">SSE 异步流式推送引擎</text>
+  <text x="428" y="492" class="font-main" font-size="11.2" fill="#5B21B6">• FastAPI StreamingResponse 异步流</text>
+  <text x="428" y="513" class="font-main" font-size="11.2" fill="#5B21B6">• 消费 LangGraph astream 异步事件</text>
+  <text x="428" y="534" class="font-main" font-size="11.2" fill="#5B21B6">• 逐节点推送结构化卡片状态快照</text>
+  <text x="428" y="555" class="font-main" font-size="11.2" fill="#5B21B6">• 终局报告 Token 级实时打字机输出</text>
+
+  <!-- ==================== ARROWS: COL 2 <-> COL 3 ==================== -->
+  <line x1="688" y1="230" x2="758" y2="230" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrowPurple)"/>
+  <text x="724" y="220" text-anchor="middle" class="font-main" font-size="10.5" font-weight="600" fill="#5B21B6">启动 / 恢复</text>
+
+  <line x1="760" y1="510" x2="690" y2="510" stroke="#059669" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="724" y="527" text-anchor="middle" class="font-main" font-size="10.5" font-weight="600" fill="#047857">节点快照流</text>
+
+  <!-- ==================== COLUMN 3: LANGGRAPH CORE ==================== -->
+  <rect x="760" y="106" width="768" height="498" rx="14" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+  <rect x="776" y="120" width="736" height="34" rx="8" fill="#059669"/>
+  <text x="1144" y="142" text-anchor="middle" class="font-main" font-size="14" font-weight="700" fill="#FFFFFF">智能体图编排核心层 (Python LangGraph StateGraph)</text>
+
+  <!-- AgentState Top Bar -->
+  <rect x="776" y="166" width="736" height="60" rx="10" fill="#D1FAE5" stroke="#10B981" stroke-width="1.5"/>
+  <text x="1144" y="189" text-anchor="middle" class="font-main" font-size="13" font-weight="700" fill="#065F46">AgentState 全局类型化状态中心 (TypedDict 集中式状态契约 · 节点无耦合读写)</text>
+  <text x="1144" y="211" text-anchor="middle" class="font-mono" font-size="10.5" fill="#047857">rewrite_query | evidence | table_documents | plan | current_step | sql_repair_count | execution_output</text>
+
+  <!-- Sub-column 3A: Retrieval & Pruning -->
+  <rect x="776" y="240" width="232" height="348" rx="10" fill="#FFFFFF" stroke="#A7F3D0" stroke-width="1.2"/>
+  <text x="892" y="263" text-anchor="middle" class="font-main" font-size="12.5" font-weight="700" fill="#065F46">① 双通道检索与图谱剪枝</text>
+
+  <rect x="788" y="276" width="208" height="58" rx="7" fill="#F0FDF4" stroke="#86EFAC"/>
+  <text x="800" y="297" class="font-mono" font-size="11" font-weight="700" fill="#14532D">EvidenceRecallNode</text>
+  <text x="800" y="317" class="font-main" font-size="10.8" fill="#374151">查询重写 + 业务口径 + 历史QA</text>
+
+  <rect x="788" y="344" width="208" height="58" rx="7" fill="#F0FDF4" stroke="#86EFAC"/>
+  <text x="800" y="365" class="font-mono" font-size="11" font-weight="700" fill="#14532D">SchemeRecallNode</text>
+  <text x="800" y="385" class="font-main" font-size="10.8" fill="#374151">表 Top-10 / 列 Top-30 语义召回</text>
+
+  <rect x="788" y="412" width="208" height="72" rx="7" fill="#F0FDF4" stroke="#86EFAC"/>
+  <text x="800" y="432" class="font-mono" font-size="11" font-weight="700" fill="#14532D">TableRelationNode</text>
+  <text x="800" y="451" class="font-main" font-size="10.8" fill="#374151">0.4 动态阈值 + 外键图谱补齐</text>
+  <text x="800" y="470" class="font-main" font-size="10.8" fill="#374151">Mix Selector 大模型二次剪枝</text>
+
+  <rect x="788" y="494" width="208" height="80" rx="7" fill="#FFFBEB" stroke="#F59E0B"/>
+  <text x="800" y="514" class="font-mono" font-size="11" font-weight="700" fill="#92400E">FeasibilityAssessment</text>
+  <text x="800" y="534" class="font-mono" font-size="10" fill="#B45309">◇ feasibility_edge</text>
+  <text x="800" y="554" class="font-main" font-size="10.8" fill="#78350F">数据分析放行 / 闲聊澄清 → END</text>
+
+  <!-- Arrow 3A -> 3B -->
+  <line x1="1008" y1="414" x2="1026" y2="414" stroke="#059669" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+  <!-- Sub-column 3B: Planning & HITL -->
+  <rect x="1028" y="240" width="232" height="348" rx="10" fill="#FFFFFF" stroke="#A7F3D0" stroke-width="1.2"/>
+  <text x="1144" y="263" text-anchor="middle" class="font-main" font-size="12.5" font-weight="700" fill="#065F46">② 动态规划与 HITL 调度</text>
+
+  <rect x="1040" y="276" width="208" height="76" rx="7" fill="#F0FDF4" stroke="#86EFAC"/>
+  <text x="1052" y="297" class="font-mono" font-size="11" font-weight="700" fill="#14532D">PlannerNode</text>
+  <text x="1052" y="317" class="font-main" font-size="10.8" fill="#374151">拆解多步 SQL / Python 计划</text>
+  <text x="1052" y="336" class="font-main" font-size="10.8" fill="#374151">吸收人工驳回意见动态重规划</text>
+
+  <rect x="1040" y="366" width="208" height="96" rx="7" fill="#FFFBEB" stroke="#F59E0B"/>
+  <text x="1052" y="387" class="font-mono" font-size="11" font-weight="700" fill="#92400E">HumanFeedbackNode</text>
+  <text x="1052" y="406" class="font-main" font-size="10.8" font-weight="600" fill="#B45309">⏸ interrupt_before 挂起等待</text>
+  <text x="1052" y="425" class="font-mono" font-size="10" fill="#B45309">◇ human_feedback_edge</text>
+  <text x="1052" y="445" class="font-main" font-size="10.5" fill="#78350F">批准→调度 | 驳回→重写 (≤3次)</text>
+
+  <rect x="1040" y="476" width="208" height="98" rx="7" fill="#D1FAE5" stroke="#10B981" stroke-width="1.4"/>
+  <text x="1052" y="497" class="font-mono" font-size="11" font-weight="700" fill="#065F46">PlanExecuteNode (中枢)</text>
+  <text x="1052" y="517" class="font-main" font-size="10.8" fill="#065F46">推进 current_step 步骤指针</text>
+  <text x="1052" y="536" class="font-mono" font-size="10" fill="#047857">◇ plan_executor_edge</text>
+  <text x="1052" y="556" class="font-main" font-size="10.5" fill="#064E3B">分发 SQL / Python / Report 节点</text>
+
+  <!-- Arrow 3B -> 3C -->
+  <line x1="1260" y1="414" x2="1278" y2="414" stroke="#059669" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+  <!-- Sub-column 3C: Execution & Report -->
+  <rect x="1280" y="240" width="232" height="348" rx="10" fill="#FFFFFF" stroke="#A7F3D0" stroke-width="1.2"/>
+  <text x="1396" y="263" text-anchor="middle" class="font-main" font-size="12.5" font-weight="700" fill="#065F46">③ 自愈执行与商业报告</text>
+
+  <rect x="1292" y="276" width="208" height="108" rx="7" fill="#FFFBEB" stroke="#F59E0B"/>
+  <text x="1304" y="296" class="font-main" font-size="11.5" font-weight="700" fill="#92400E">SQL 生成与反思自愈闭环</text>
+  <text x="1304" y="315" class="font-mono" font-size="10.2" fill="#B45309">SqlGenerator ⇄ SqlExecute</text>
+  <text x="1304" y="335" class="font-main" font-size="10.8" fill="#374151">• SQLGlot AST 静态只读校验</text>
+  <text x="1304" y="354" class="font-main" font-size="10.8" fill="#374151">• 报错带堆栈回跳修复 (≤3次)</text>
+  <text x="1304" y="372" class="font-mono" font-size="9.8" fill="#B45309">◇ sql_executor_edge</text>
+
+  <rect x="1292" y="396" width="208" height="86" rx="7" fill="#F0FDF4" stroke="#86EFAC"/>
+  <text x="1304" y="416" class="font-main" font-size="11.5" font-weight="700" fill="#14532D">Python 沙箱分析流水线</text>
+  <text x="1304" y="436" class="font-mono" font-size="10" fill="#15803D">Gen → Execute → Analyze</text>
+  <text x="1304" y="456" class="font-main" font-size="10.8" fill="#374151">stdin 安全传参 + 统计商业解读</text>
+  <text x="1304" y="473" class="font-main" font-size="10.2" fill="#047857">完成后递增指针回环 PlanExecute</text>
+
+  <rect x="1292" y="494" width="208" height="80" rx="7" fill="#EFF6FF" stroke="#60A5FA"/>
+  <text x="1304" y="514" class="font-mono" font-size="11" font-weight="700" fill="#1E40AF">ReportGeneratorNode</text>
+  <text x="1304" y="534" class="font-main" font-size="10.8" fill="#374151">• 超长表格前 20 行防爆采样</text>
+  <text x="1304" y="554" class="font-main" font-size="10.5" fill="#1E3A8A">• 多步证据流式汇总报告 → END</text>
+
+  <!-- ==================== VERTICAL CONNECTORS TO INFRASTRUCTURE ==================== -->
+  <line x1="860" y1="604" x2="860" y2="648" stroke="#475569" stroke-width="1.8" marker-start="url(#arrowSlate)" marker-end="url(#arrowSlate)"/>
+  <text x="872" y="630" class="font-main" font-size="10.5" fill="#334155">向量与外键检索</text>
+
+  <line x1="1120" y1="604" x2="1120" y2="648" stroke="#475569" stroke-width="1.8" marker-start="url(#arrowSlate)" marker-end="url(#arrowSlate)"/>
+  <text x="1132" y="630" class="font-main" font-size="10.5" fill="#334155">只读 SQL / 沙箱运算</text>
+
+  <line x1="1380" y1="604" x2="1380" y2="648" stroke="#475569" stroke-width="1.8" marker-start="url(#arrowSlate)" marker-end="url(#arrowSlate)"/>
+  <text x="1392" y="630" class="font-main" font-size="10.5" fill="#334155">LLM 推理与模板渲染</text>
+
+  <!-- ==================== ROW 4: INFRASTRUCTURE & SECURITY ==================== -->
+  <rect x="32" y="650" width="1496" height="202" rx="14" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5"/>
+  <rect x="48" y="664" width="1464" height="32" rx="8" fill="#334155"/>
+  <text x="780" y="685" text-anchor="middle" class="font-main" font-size="13.5" font-weight="700" fill="#FFFFFF">数据资产存储底座  ·  多级安全执行防线  ·  大语言模型与提示词基础设施</text>
+
+  <!-- Infra 1 -->
+  <rect x="48" y="708" width="354" height="128" rx="10" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.4"/>
+  <text x="64" y="732" class="font-main" font-size="13" font-weight="700" fill="#B91C1C">PostgreSQL 16 + pgvector 知识库</text>
+  <text x="64" y="755" class="font-main" font-size="11.2" fill="#374151">• psycopg3 原生 HNSW 索引余弦相似度检索</text>
+  <text x="64" y="776" class="font-main" font-size="11.2" fill="#374151">• 四维向量: TABLE / COLUMN / GLOSSARY / QA</text>
+  <text x="64" y="797" class="font-main" font-size="11.2" fill="#374151">• 关系表: db_table / db_column / db_foreign_key</text>
+  <text x="64" y="818" class="font-mono" font-size="10.2" fill="#DC2626">app/retrieval/retriever.py &amp; schema_store.py</text>
+
+  <!-- Infra 2 -->
+  <rect x="418" y="708" width="354" height="128" rx="10" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.4"/>
+  <text x="434" y="732" class="font-main" font-size="13" font-weight="700" fill="#B45309">三级只读 SQL 防线 (SQLGlot + SQLite)</text>
+  <text x="434" y="755" class="font-main" font-size="11.2" fill="#374151">• 语法防线: SQLGlot AST 拦截 DROP/DELETE/UPDATE</text>
+  <text x="434" y="776" class="font-main" font-size="11.2" fill="#374151">• 物理防线: SQLite URI (mode=ro) 物理只读连接</text>
+  <text x="434" y="797" class="font-main" font-size="11.2" fill="#374151">• 预置 BIRD Benchmark 业务评测数据库</text>
+  <text x="434" y="818" class="font-mono" font-size="10.2" fill="#D97706">app/graph/nodes/sql_execute.py</text>
+
+  <!-- Infra 3 -->
+  <rect x="788" y="708" width="354" height="128" rx="10" fill="#FFFFFF" stroke="#6EE7B7" stroke-width="1.4"/>
+  <text x="804" y="732" class="font-main" font-size="13" font-weight="700" fill="#047857">Docker / Subprocess 双模隔离沙箱</text>
+  <text x="804" y="755" class="font-main" font-size="11.2" fill="#374151">• 容器隔离优先，无 Docker 环境平滑降级子进程</text>
+  <text x="804" y="776" class="font-main" font-size="11.2" fill="#374151">• stdin 标准输入安全传参，规避代码拼接注入</text>
+  <text x="804" y="797" class="font-main" font-size="11.2" fill="#374151">• Pandas / NumPy 复杂统计与超时熔断保护</text>
+  <text x="804" y="818" class="font-mono" font-size="10.2" fill="#059669">app/shared/python_executor.py</text>
+
+  <!-- Infra 4 -->
+  <rect x="1158" y="708" width="354" height="128" rx="10" fill="#FFFFFF" stroke="#93C5FD" stroke-width="1.4"/>
+  <text x="1174" y="732" class="font-main" font-size="13" font-weight="700" fill="#1D4ED8">LLM 模型网关与提示词模板引擎</text>
+  <text x="1174" y="755" class="font-main" font-size="11.2" fill="#374151">• OpenAI 兼容协议接入 (Qwen / DeepSeek / GPT)</text>
+  <text x="1174" y="776" class="font-main" font-size="11.2" fill="#374151">• 1024 维高维 Embedding 语义向量生成接口</text>
+  <text x="1174" y="797" class="font-main" font-size="11.2" fill="#374151">• 17 套结构化提示词模板安全渲染与 JSON 约束</text>
+  <text x="1174" y="818" class="font-mono" font-size="10.2" fill="#2563EB">app/prompts/*.st &amp; manager.py</text>
+</svg>

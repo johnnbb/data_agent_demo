@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class PlannerNode:
     """
-    任务规划节点（对应 Kotlin 的 PlannerNode.kt）。
+    任务规划节点。
     将经可行性确认的业务问题，结合精选后的表结构与业务口径，拆解为结构化多步执行计划。
     """
 

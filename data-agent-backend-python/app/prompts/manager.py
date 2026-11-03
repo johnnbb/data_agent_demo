@@ -6,7 +6,7 @@ PROMPTS_DIR = Path(__file__).parent
 
 class PromptManager:
     """
-    提示词模板管理器（对应 Java 的 PromptManager.kt）。
+    提示词模板管理器。
     负责安全读取 app/prompts/*.st 模板并提供参数渲染能力。
     """
 

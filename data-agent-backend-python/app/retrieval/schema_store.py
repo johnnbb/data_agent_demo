@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SchemaStore:
     """
-    数据资产元数据存储仓库（对应 Kotlin 的 DbForeignKeyRepository 和 DbTableRepository）。
+    数据资产元数据存储仓库。
     负责从 PostgreSQL 关系表中查询结构、外键与字段详情。
     """
 

@@ -67,3 +67,6 @@ Icon
 *.sqlite3
 *.db
 !data-agent-backend-python/data/dev_20240627/dev_databases/california_schools/california_schools.sqlite
+
+# Local private study notes
+docs/data_agent_study_notes.md

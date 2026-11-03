@@ -38,7 +38,7 @@ class ThresholdSelection:
 
 class TableRelationNode:
     """
-    表关联拓扑补齐与精筛节点（对应 Kotlin 的 TableRelationNode.kt）。
+    表关联拓扑补齐与精筛节点。
     通过动态阈值过滤、外键拓扑扩展、模式构建与大模型二次精筛 (Mix Selector) 消除外键断裂。
     """
 

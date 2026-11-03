@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class PythonAnalyzeNode:
     """
-    Python 分析解读节点（对应 Kotlin 的 PythonAnalyzeNode.kt）。
+    Python 分析解读节点。
     接收 Python 沙箱脚本执行的结构化产物，结合用户原始查询与重写意图，
     利用大模型将指标与计算结果提炼为清晰易读的自然语言分析总结，
     回填至 EXECUTION_OUTPUT['step_{step}_analysis'] 并递增步骤计数器。

@@ -1,55 +1,58 @@
 # 🐍 Data-Agent Python Backend
 
-基于 **FastAPI + LangGraph + LangChain** 构建的 Text2SQL 智能体后端服务。
+基于 **FastAPI + LangGraph + PostgreSQL (pgvector) + SQLGlot** 构建的企业级问数智能体（Text2SQL & Python Data Agent）后端服务。
 
-## 🌟 核心特性
+## 🌟 核心架构特性
 
-- **LangGraph 状态图驱动**：完全对齐 Kotlin/Spring AI Alibaba Graph 的编排链路，包含从 Query 重写、双通道知识召回、任务规划（Planner）、HITL 人机协同，到 SQL 迭代纠错、Python 沙箱高阶计算与商业分析报告生成。
-- **A2A (Agent-to-Agent) 协议流式传输**：采用 Server-Sent Events (SSE) 协议实时向前端推送节点状态卡片、打字机 Markdown 流与交互事件。
-- **Docker / Subprocess 双模安全沙箱**：隔离运行大模型生成的 Python 二次分析计算代码，具备标准输入安全注入、异常回溯与自动降级保护。
-- **动态 Token 防爆机制**：在数据交付报告节点（ReportGeneratorNode）前置实施智能采样保护（多于 20 行数据自动取样），彻底杜绝超长 Context Window 导致的大模型超时与费用暴涨。
+- **LangGraph 类型化状态图编排**：以 `AgentState` 全局状态中心串联意图重写、双通道知识召回、外键图谱剪枝、可行性研判、多步任务规划（Planner）、HITL 人机协同审批、SQL 自愈重试、Python 沙箱深度计算与流式商业报告生成。
+- **A2A (Agent-to-Agent) 流式通信协议**：基于 `FastAPI` + `StreamingResponse` (SSE) 与 JSON-RPC 2.0，实时推送节点卡片状态快照与 Token 级流式报告；结合 `MemorySaver` 实现 `interrupt_before` 人工挂起与无损恢复。
+- **三级只读 SQL 安全防线与自愈闭环**：前置采用 `SQLGlot` AST 语法树静态解析拦截 `DROP / DELETE / UPDATE / INSERT / ALTER` 等写操作，物理层使用 SQLite URI 只读锁（`?mode=ro`）；执行异常时自动携带错误堆栈回跳重试（最多 3 次）。
+- **Docker / Subprocess 双模隔离沙箱**：通过标准输入（`stdin`）安全注入 JSON 查询结果集，在隔离环境中执行 `Pandas / NumPy` 二次统计分析，支持超时熔断与无 Docker 环境平滑降级。
+- **动态 Token 防爆采样**：在综合报告生成节点（`ReportGeneratorNode`）前置对超长结果集实施动态采样（超过 20 行自动安全截断并保留总行数元信息），杜绝上下文窗口溢出。
 
 ## 📁 目录结构
 
 ```text
 data-agent-backend-python/
 ├── app/
-│   ├── a2a/                  # A2A 协议与 SSE 流式事件路由
-│   ├── config.py             # 配置管理 (Pydantic BaseSettings)
+│   ├── a2a/                              # A2A JSON-RPC 路由与 SSE 流式事件推送
+│   ├── config.py                         # 环境变量配置管理 (Pydantic Settings)
 │   ├── graph/
-│   │   ├── nodes/            # 14 个独立 LangGraph 核心编排节点
-│   │   │   ├── evidence_recall.py     # 知识召回 (Query Rewrite + PGVector + Schema)
-│   │   │   ├── graph_recall.py        # 关系图谱关联表扩展与剪枝 (Mix Selector)
-│   │   │   ├── feasibility_assessment.py # 可行性评估
-│   │   │   ├── planner.py             # 任务拆解与执行计划生成
-│   │   │   ├── plan_execution.py      # 步骤循环状态控制器
-│   │   │   ├── sql_generator.py       # SQL 生成
-│   │   │   ├── sql_execute.py         # SQLite 本地执行与 DisplaySpec 构建
-│   │   │   ├── sql_error_fixer.py     # SQL 自我纠错循环 (反思重试)
-│   │   │   ├── python_generator.py    # Python 计算与可视化脚本生成
-│   │   │   ├── python_execute.py      # Docker / Subprocess 沙箱执行引擎
-│   │   │   ├── python_analyze.py      # Python 统计结果商业化解读
-│   │   │   └── report_generator.py    # 综合报告流式生成 (结构化汇总与 ECharts 渲染)
-│   │   ├── edges/            # 条件分支路由 (HumanFeedback, PlanExecutor)
-│   │   ├── state.py          # OverAllState 图状态机模型
-│   │   └── workflow.py       # StateGraph 图编排组装
-│   ├── prompts/              # StringTemplate 统一提示词库与管理器
-│   ├── sandbox/              # Python 执行沙箱 (Docker / 本地隔离)
-│   └── service/              # 业务服务层
+│   │   ├── nodes/                        # LangGraph 核心编排节点
+│   │   │   ├── evidence_recall.py        # 独立问题重写 + 业务口径与历史 QA 双路召回
+│   │   │   ├── scheme_recall.py          # 表结构与列描述向量召回
+│   │   │   ├── table_relation.py         # 0.4 动态阈值过滤 + 外键拓扑补齐 + Mix Selector 剪枝
+│   │   │   ├── feasibility_assessment.py # 需求可行性门禁评估
+│   │   │   ├── planner.py                # 多步分析计划拆解与驳回重规划
+│   │   │   ├── human_feedback.py         # HITL 人工审批状态接入与回退控制
+│   │   │   ├── plan_execute.py           # current_step 步骤指针推进与动态调度中枢
+│   │   │   ├── sql_generator.py          # SQL 生成与错误堆栈反思修复
+│   │   │   ├── sql_execute.py            # SQLGlot AST 只读校验 + SQLite 物理只读执行
+│   │   │   ├── python_generator.py       # Python 统计分析脚本生成
+│   │   │   ├── python_execute.py         # Docker / Subprocess 隔离沙箱执行
+│   │   │   ├── python_analyze.py         # Python 统计产物商业化解读
+│   │   │   └── report_generator.py       # 多步证据汇总与流式 Markdown 商业报告生成
+│   │   ├── edges.py                      # 四大核心条件路由边函数
+│   │   ├── spec.py                       # 节点名与状态键统一枚举契约
+│   │   ├── state.py                      # AgentState 全局状态模型定义
+│   │   └── builder.py                    # StateGraph 图拓扑组装与编译
+│   ├── prompts/                          # 17 套 .st 结构化提示词模板与管理器
+│   ├── retrieval/                        # PostgreSQL + pgvector 向量检索器与外键元数据仓库
+│   └── shared/                           # Docker / Subprocess 双模 Python 安全沙箱执行器
 ├── data/
-│   ├── database.sql          # PostgreSQL 知识库初始化 SQL
-│   └── dev_20240627/         # BIRD Benchmark SQLite 数据库集合与元数据
-├── tests/                    # 单元与端到端集成测试集
-├── main.py                   # FastAPI 服务入口
-├── pyproject.toml            # uv / pip 依赖管理配置
-└── .env.example              # 环境变量配置模板
+│   ├── database.sql                      # PostgreSQL 知识库与向量表初始化 SQL
+│   └── dev_20240627/                     # BIRD Benchmark 评测数据库与元数据描述
+├── tests/                                # 44 项单元测试与集成测试套件
+├── main.py                               # FastAPI 应用启动入口
+├── pyproject.toml                        # uv / PEP 621 项目依赖声明
+└── .env.example                          # 环境变量配置模板
 ```
 
 ## 🚀 快速启动
 
 ### 1. 安装依赖
 
-推荐使用现代 Python 包管理器 `uv`（也可以使用标准 `venv + pip`）：
+推荐使用 `uv`（也可使用标准 `venv + pip`）：
 
 ```bash
 # 使用 uv
@@ -70,20 +73,18 @@ cp .env.example .env
 ```
 
 配置说明：
-- `OPENAI_API_KEY`: 兼容 OpenAI 格式的 API 密钥。
-- `OPENAI_BASE_URL`: 模型中转地址或官方地址（支持阿里 DashScope、DeepSeek 等）。
-- `DATABASE_URL`: PostgreSQL 连接串（需预先导入 `data/database.sql`）。
+- `OPENAI_API_KEY`: OpenAI 兼容格式的大模型 API 密钥。
+- `OPENAI_BASE_URL`: 模型 API 地址（如阿里云百炼 DashScope、DeepSeek、OpenAI 等）。
+- `DATABASE_URL`: PostgreSQL 连接串（需启用 `vector` 插件并导入 `data/database.sql`）。
 
-### 3. 运行服务
+### 3. 启动服务
 
 ```bash
-# 激活环境后启动
 uvicorn main:app --host 0.0.0.0 --port 9933 --reload
 ```
 
 ## 🧪 运行测试
 
 ```bash
-pytest tests/ -v
+pytest tests/ -m "not e2e" -v
 ```
-

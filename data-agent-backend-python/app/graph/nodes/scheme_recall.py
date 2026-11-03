@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class SchemeRecallNode:
     """
-    数据库元数据结构召回节点（对应 Kotlin 的 SchemeReCallNode.kt）。
+    数据库元数据结构召回节点。
     """
 
     def __init__(self, retriever: Optional[VectorRetriever] = None):

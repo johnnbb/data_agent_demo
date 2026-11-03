@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class PlanExecuteNode:
     """
-    执行调度控制节点（对应 Kotlin 的 PlanExecuteNode.kt）。
+    执行调度控制节点。
     依据规划方案中的多步执行计划（execution_plan），按步推进当前步骤号（CURRENT_STEP），
     并将 NEXT_NODE 导向当前步骤指定的执行工具（如 SQL_GENERATE_NODE）。
     若全部步骤执行完毕，重置步骤号并走向终止 END。

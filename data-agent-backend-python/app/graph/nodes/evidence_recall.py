@@ -20,7 +20,7 @@ class EvidenceQueryRewrite(BaseModel):
 
 class EvidenceRecallNode:
     """
-    业务领域知识召回节点（对应 Kotlin 的 EvidenceRecallNode.kt）。
+    业务领域知识与历史问答双路召回节点。
     """
 
     def __init__(

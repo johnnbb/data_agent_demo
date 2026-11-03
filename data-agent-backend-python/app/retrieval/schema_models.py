@@ -55,7 +55,7 @@ class Schema(BaseModel):
             pk_str = "primaryKey, " if col.name in primary_keys else ""
             examples = (examples_by_column or {}).get(col.name, [])
             ex_str = f"Examples: [{', '.join(examples)}]" if examples else "Examples: []"
-            # 保持与 Kotlin Schema.kt 1:1 的换行与缩进格式
+            # 标准结构化列定义与示例格式化输出
             lines.append(f"({col.name}: {col.type or 'TEXT'}\n, {col.description or ''}, {pk_str}{ex_str}),")
         lines.append("]")
         return "\n".join(lines) + "\n"

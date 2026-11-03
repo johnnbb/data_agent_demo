@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class ReportGeneratorNode:
     """
-    终极综合分析报告生成节点（对应 Kotlin 的 ReportGeneratorNode.kt）。
+    终极综合分析报告生成节点。
     消费全流程历史沉淀的执行数据（SQL 查询数据、实际执行 SQL、Python 分析解释），
     结合用户原始诉求与规划思路，驱动 LLM 汇总生成结构化 Markdown 报告与 ECharts 图表，
     达到可执行、可解释、可追溯、可交付的完整闭环。

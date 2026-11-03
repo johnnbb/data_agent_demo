@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class FeasibilityAssessmentNode:
     """
-    可行性研判门禁节点（对应 Kotlin 的 FeasibilityAssessmentNode.kt）。
+    可行性研判门禁节点。
     结合规范化查询、业务 Evidence 和提取后的局部 Schema，研判用户问题是否可回答。
     """
 

@@ -25,7 +25,7 @@ def extract_raw_python(content: str) -> str:
 
 class PythonGeneratorNode:
     """
-    Python 分析代码生成节点（对应 Kotlin 的 PythonGeneratorNode.kt）。
+    Python 分析代码生成节点。
     根据表结构、前序 SQL 查询结果样例、当前步骤指令与计算参数，
     生成可直接在沙箱中由 sys.stdin 读取 JSON 数据并执行分析的 Python 脚本。
     """

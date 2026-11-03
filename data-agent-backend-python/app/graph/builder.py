@@ -26,7 +26,7 @@ from app.graph.nodes.report_generator import report_generator_node
 
 def build_graph(checkpointer: MemorySaver = None, interrupt_before_feedback: bool = True):
     """
-    组装 Text2SQL 核心双通道检索、结构链接、可行性研判、任务规划、人工审核、执行调度与 SQL/Python 生成执行状态图（对应 GraphConfiguration.kt）。
+    组装 Text2SQL 核心双通道检索、结构链接、可行性研判、任务规划、人工审核、执行调度与 SQL/Python 生成执行状态图。
     START -> EVIDENCE_RECALL -> SCHEME_RECALL -> TABLE_RELATION -> FEASIBILITY_ASSESSMENT
       -> (条件分支: 数据分析) -> PLANNER -> HUMAN_FEEDBACK
            -> (审核通过) -> PLAN_EXECUTION

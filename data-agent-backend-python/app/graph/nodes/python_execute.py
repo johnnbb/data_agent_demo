@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class PythonExecuteNode:
     """
-    Python 脚本执行节点（对应 Kotlin 的 PythonExecuteNode.kt）。
+    Python 脚本执行节点。
     读取生成的 Python 脚本，以 SQL 查询结果数据作为 stdin 注入，
     在安全沙箱（或隔离子进程）中执行该脚本并捕获结构化输出。
     """

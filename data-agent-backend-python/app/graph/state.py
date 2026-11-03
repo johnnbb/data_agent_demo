@@ -35,6 +35,9 @@ class AgentState(TypedDict, total=False):
     # SQL 生成与执行阶段产物（与前端大写常量对齐）
     SQL_GENERATE_OUTPUT: Optional[str]
     SQL_EXECUTE_OUTPUT: Optional[dict[str, Any]]
+    SQL_REPAIR_COUNT: Optional[int]
+    SQL_ERROR_MESSAGE: Optional[str]
+    SQL_NEXT_NODE: Optional[str]
 
     # Python 生成、执行与分析产物（与前端大写常量对齐）
     PYTHON_GENERATE_NODE_OUTPUT: Optional[str]

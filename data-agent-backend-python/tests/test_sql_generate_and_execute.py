@@ -3,8 +3,8 @@ from langgraph.graph import END
 
 from app.graph.spec import NodeName, StateKey
 from app.graph.nodes.sql_generator import SqlGeneratorNode, extract_raw_sql
-from app.graph.nodes.sql_execute import SqlExecuteNode, locate_sqlite_database
-from app.graph.edges import plan_executor_edge
+from app.graph.nodes.sql_execute import SqlExecuteNode, locate_sqlite_database, validate_sql_ast
+from app.graph.edges import plan_executor_edge, sql_executor_edge
 from app.graph.builder import build_graph
 
 
@@ -96,23 +96,127 @@ def test_sql_execute_multi_step_accumulation():
 
 
 
-def test_sql_execute_node_error_handling():
+def test_validate_sql_ast_security_interception():
+    """
+    专门针对 AST 语法树解析与只读安全拦截的测试：
+    验证 DROP、DELETE、UPDATE、ALTER 等破坏性操作在执行前被确定性拦截，严禁触碰数据库。
+    """
+    # 正常查询：通过
+    valid, err = validate_sql_ast("SELECT id, name FROM schools WHERE id = 1;")
+    assert valid is True
+    assert err is None
+
+    # DROP TABLE：拦截
+    valid, err = validate_sql_ast("DROP TABLE schools;")
+    assert valid is False
+    assert "安全校验拦截" in err
+    assert "DROP" in err
+
+    # DELETE：拦截
+    valid, err = validate_sql_ast("DELETE FROM schools WHERE id = 1;")
+    assert valid is False
+    assert "DELETE" in err
+
+    # UPDATE：拦截
+    valid, err = validate_sql_ast("UPDATE schools SET name = 'hacked';")
+    assert valid is False
+    assert "UPDATE" in err
+
+    # 复合破坏性注入：拦截
+    valid, err = validate_sql_ast("SELECT * FROM schools; DROP TABLE students;")
+    assert valid is False
+    assert "DROP" in err
+
+
+def test_sql_execute_node_error_handling_and_self_repair():
+    """
+    验证 SQL 执行报错后的自纠错重试流转：
+    1. 首次报错（attempt 1/3）：步骤不推进，记录错误信息，下一跳路由回 SQL_GENERATION 触发大模型反思重修
+    2. 重试耗尽（attempt 3/3）：推进步骤，路由流转至 PLAN_EXECUTION 避免死循环
+    """
     node = SqlExecuteNode()
     bad_query = "SELECT non_existent_col FROM definitely_not_a_table;"
-    state = {
+
+    # 1. 模拟第 1 次报错
+    state_attempt1 = {
         StateKey.SQL_GENERATION_RESULT.value: bad_query,
         StateKey.DATABASE_ID.value: "california_schools",
         StateKey.CURRENT_STEP.value: 1,
+        StateKey.SQL_REPAIR_COUNT.value: 0,
+    }
+    result1 = node(state_attempt1)
+
+    # 步数不应递增，应保持当前步以便重修
+    assert StateKey.CURRENT_STEP.value not in result1
+    # 计数器累加
+    assert result1[StateKey.SQL_REPAIR_COUNT.value] == 1
+    # 下一跳回跳至 SQL 生成节点进行反思纠错
+    assert result1[StateKey.SQL_NEXT_NODE.value] == NodeName.SQL_GENERATION.value
+    # 错误堆栈记录完整
+    assert "no such table" in result1[StateKey.SQL_ERROR_MESSAGE.value]
+
+    # 2. 模拟第 3 次重试仍失败（上限熔断）
+    state_attempt3 = {
+        StateKey.SQL_GENERATION_RESULT.value: bad_query,
+        StateKey.DATABASE_ID.value: "california_schools",
+        StateKey.CURRENT_STEP.value: 1,
+        StateKey.SQL_REPAIR_COUNT.value: 3,
+    }
+    result3 = node(state_attempt3)
+
+    # 重试次数耗尽，步数强制推进至下一步
+    assert result3[StateKey.CURRENT_STEP.value] == 2
+    # 计数器与错误清空
+    assert result3[StateKey.SQL_REPAIR_COUNT.value] == 0
+    # 下一跳正常流转回执行控制
+    assert result3[StateKey.SQL_NEXT_NODE.value] == NodeName.PLAN_EXECUTION.value
+    assert "step_1" in result3[StateKey.EXECUTION_OUTPUT.value]
+
+
+def test_sql_executor_edge():
+    assert sql_executor_edge({StateKey.SQL_NEXT_NODE.value: NodeName.SQL_GENERATION.value}) == NodeName.SQL_GENERATION.value
+    assert sql_executor_edge({StateKey.SQL_NEXT_NODE.value: NodeName.PLAN_EXECUTION.value}) == NodeName.PLAN_EXECUTION.value
+    assert sql_executor_edge({}) == NodeName.PLAN_EXECUTION.value
+
+
+def test_sql_generator_self_reflection_repair_with_llm():
+    """
+    专门针对【SQL 反思自纠错】的大模型联动测试：
+    输入包含错误的 SQL 以及具体的 sqlite 报错（no such column），
+    验证 SqlGeneratorNode 会自动切换至 sql-error-fixer.st 模板，产出消除错误列的修复后 SQL。
+    """
+    node = SqlGeneratorNode()
+    state = {
+        StateKey.REWRITE_QUERY.value: "Alameda 县哪所学校免费午餐人数最多？",
+        StateKey.DATABASE_ID.value: "california_schools",
+        StateKey.CURRENT_STEP.value: 1,
+        StateKey.SQL_GENERATION_RESULT.value: "SELECT `School Name`, `bad_fake_col` FROM frpm;",
+        StateKey.SQL_ERROR_MESSAGE.value: "sqlite3.OperationalError: no such column: bad_fake_col",
+        StateKey.TABLE_RELATION.value: {
+            "databaseId": "california_schools",
+            "dbTables": [
+                {
+                    "name": "frpm",
+                    "columns": [
+                        {"name": "CDSCode", "type": "TEXT"},
+                        {"name": "School Name", "type": "TEXT"},
+                        {"name": "County Name", "type": "TEXT"},
+                        {"name": "Free Meal Count (K-12)", "type": "INTEGER"},
+                    ],
+                }
+            ],
+            "dbForeignKeys": [],
+        },
     }
 
     result = node(state)
-    assert result[StateKey.CURRENT_STEP.value] == 2
+    fixed_sql = result[StateKey.SQL_GENERATION_RESULT.value]
 
-    exec_result = result[StateKey.SQL_EXECUTION_RESULT.value]
-    result_set = exec_result["resultSet"]
-    assert result_set["errorMsg"] is not None
-    assert "no such table" in result_set["errorMsg"]
-    assert len(result_set["data"]) == 0
+    assert fixed_sql is not None
+    assert "SELECT" in fixed_sql.upper()
+    assert "FRPM" in fixed_sql.upper()
+    # 核心检验：大模型看着报错堆栈进行反思，成功去除了编造的虚假列 bad_fake_col
+    assert "bad_fake_col" not in fixed_sql
 
 
 def test_plan_executor_edge():

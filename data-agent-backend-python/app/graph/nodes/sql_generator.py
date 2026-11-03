@@ -88,20 +88,41 @@ class SqlGeneratorNode:
         rewrite_query = state.get(StateKey.REWRITE_QUERY.value) or state.get("input", "")
         evidence = state.get(StateKey.EVIDENCE.value, "")
 
-        # 3. 渲染 new-sql-generate.st
-        sql_prompt = prompt_manager.render(
-            "new-sql-generate.st",
-            dialect=self.dialect,
-            question=rewrite_query,
-            schema_info=scheme_prompt,
-            evidence=evidence,
-            semantic_lookup_rules="(无)",
-            semantic_enum_rules="(无)",
-            execution_description=instruction,
-        )
+        # 3. 检查是否有执行报错需要反思重修（自纠错模式 vs 首次生成模式）
+        sql_error_msg = state.get(StateKey.SQL_ERROR_MESSAGE.value)
+        failed_sql = state.get(StateKey.SQL_GENERATION_RESULT.value, "")
+
+        if sql_error_msg:
+            logger.info(
+                f"[SqlGeneratorNode] Step {current_step} triggering self-reflection repair for error: {sql_error_msg}"
+            )
+            sql_prompt = prompt_manager.render(
+                "sql-error-fixer.st",
+                dialect=self.dialect,
+                error_message=sql_error_msg,
+                schema_info=scheme_prompt,
+                execution_description=instruction,
+                error_sql=failed_sql,
+                question=rewrite_query,
+                evidence=evidence,
+            )
+            user_prompt = "请针对报错信息和 Schema 仔细分析，仅输出修复后的纯 SQL 查询语句，严禁包含任何解释或 Markdown 代码块。"
+        else:
+            # 首次标准生成
+            sql_prompt = prompt_manager.render(
+                "new-sql-generate.st",
+                dialect=self.dialect,
+                question=rewrite_query,
+                schema_info=scheme_prompt,
+                evidence=evidence,
+                semantic_lookup_rules="(无)",
+                semantic_enum_rules="(无)",
+                execution_description=instruction,
+            )
+            user_prompt = "请只输出纯 SQL 查询语句，不要包含任何解释或额外文字。"
 
         logger.info(
-            f"[SqlGeneratorNode] Generating SQL for Step {current_step}: '{instruction}'"
+            f"[SqlGeneratorNode] Generating SQL for Step {current_step}: '{instruction}' (Repair mode: {bool(sql_error_msg)})"
         )
 
         # 4. 调用大模型生成 SQL
@@ -109,7 +130,7 @@ class SqlGeneratorNode:
             model=self.chat_model,
             messages=[
                 {"role": "system", "content": sql_prompt},
-                {"role": "user", "content": "请只输出纯 SQL 查询语句，不要包含任何解释或额外文字。"},
+                {"role": "user", "content": user_prompt},
             ],
             temperature=0.0,
             extra_body={"enable_thinking": False},

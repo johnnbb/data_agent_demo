@@ -3,7 +3,12 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from app.graph.state import AgentState
 from app.graph.spec import NodeName
-from app.graph.edges import feasibility_assessment_edge, human_feedback_edge, plan_executor_edge
+from app.graph.edges import (
+    feasibility_assessment_edge,
+    human_feedback_edge,
+    plan_executor_edge,
+    sql_executor_edge,
+)
 from app.graph.nodes.evidence_recall import evidence_recall_node
 from app.graph.nodes.scheme_recall import scheme_recall_node
 from app.graph.nodes.table_relation import table_relation_node
@@ -91,9 +96,16 @@ def build_graph(checkpointer: MemorySaver = None, interrupt_before_feedback: boo
         },
     )
 
-    # 7. SQL 生成后流向真实数据库执行，执行完毕回环至计划调度器 PLAN_EXECUTION
+    # 7. SQL 生成后流向真实数据库执行，根据执行结果条件分支路由（报错未超限回跳 SQL_GENERATION 自纠错，成功或超限回环至 PLAN_EXECUTION）
     builder.add_edge(NodeName.SQL_GENERATION.value, NodeName.SQL_EXECUTION.value)
-    builder.add_edge(NodeName.SQL_EXECUTION.value, NodeName.PLAN_EXECUTION.value)
+    builder.add_conditional_edges(
+        NodeName.SQL_EXECUTION.value,
+        sql_executor_edge,
+        {
+            NodeName.SQL_GENERATION.value: NodeName.SQL_GENERATION.value,
+            NodeName.PLAN_EXECUTION.value: NodeName.PLAN_EXECUTION.value,
+        },
+    )
 
     # 8. Python 生成后流向沙箱执行，分析解读完成后回环至计划调度器 PLAN_EXECUTION
     builder.add_edge(NodeName.PYTHON_GENERATION.value, NodeName.PYTHON_EXECUTION.value)

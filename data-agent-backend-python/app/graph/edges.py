@@ -58,3 +58,15 @@ def plan_executor_edge(state: AgentState) -> str:
     return next_node
 
 
+def sql_executor_edge(state: AgentState) -> str:
+    """
+    SQL 执行后条件路由边。
+    根据 SqlExecuteNode 写入的 SQL_NEXT_NODE 状态：
+    - 若执行报错且重试未超限，路由回退至 SQL_GENERATION 进行自纠错；
+    - 若执行成功或重试次数耗尽，路由流转至 PLAN_EXECUTION。
+    """
+    next_node = state.get(StateKey.SQL_NEXT_NODE.value, NodeName.PLAN_EXECUTION.value)
+    logger.info(f"[SqlExecutorEdge] 路由至下一节点: {next_node}")
+    return next_node
+
+

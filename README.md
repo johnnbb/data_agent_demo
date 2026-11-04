@@ -24,6 +24,7 @@
 - [技术栈清单](#️-技术栈清单)
 - [快速启动 (3 分钟体验)](#-快速启动-3-分钟体验)
 - [项目目录结构](#-项目目录结构)
+- [致谢与参考](#-致谢与参考)
 - [开源协议](#-开源协议)
 
 ---
@@ -191,6 +192,15 @@ uv run pytest tests/ -m "not e2e" -v
     │   └── App.vue                   # 流式会话时间线主界面
     └── package.json
 ```
+
+---
+
+## 🙏 致谢与参考
+
+本项目的状态图工作流架构设计与链路拆解思路深度参考并致敬以下优秀开源项目，在此基础上使用 **Python (`LangGraph + FastAPI + pgvector + SQLGlot`)** 原生技术栈完成了全链路重构与工程落地：
+
+- [spring-ai-alibaba/DataAgent](https://github.com/spring-ai-alibaba/DataAgent) — 基于 Spring AI Alibaba Graph 构建的企业级智能数据分析 Agent 官方开源项目
+- [qifan777/data-agent-study](https://github.com/qifan777/data-agent-study) — 深入浅出的 Data Agent 状态图工作流拆解与渐进式实现教程
 
 ---
 

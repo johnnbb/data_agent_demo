@@ -1,0 +1,219 @@
+{
+  "config": {
+    "chat_model": "glm-5",
+    "california_schools_full_size": 89,
+    "california_schools_slice_size": 30,
+    "california_schools_slice_ids": [
+      1,
+      2,
+      3,
+      7,
+      8,
+      9,
+      10,
+      16,
+      17,
+      18,
+      20,
+      26,
+      27,
+      36,
+      37,
+      45,
+      46,
+      47,
+      49,
+      55,
+      57,
+      60,
+      64,
+      67,
+      68,
+      69,
+      75,
+      76,
+      83,
+      84
+    ],
+    "debit_card_holdout_size": 15
+  },
+  "full_california_schools_89": {
+    "total": 89,
+    "ex_count": 46,
+    "ex_rate": 0.5169,
+    "empty_match_count": 0,
+    "by_difficulty": {
+      "simple": {
+        "count": 54,
+        "ex_count": 30,
+        "ex_rate": 0.5556
+      },
+      "moderate": {
+        "count": 30,
+        "ex_count": 15,
+        "ex_rate": 0.5
+      },
+      "challenging": {
+        "count": 5,
+        "ex_count": 1,
+        "ex_rate": 0.2
+      }
+    },
+    "feasibility_false_reject_count": 3,
+    "feasibility_false_reject_rate": 0.0337,
+    "mix_selector_ablation": {
+      "pre_mix_all_tables_recalled_count": 89,
+      "pre_mix_all_tables_recalled_rate": 1.0,
+      "post_mix_all_tables_recalled_count": 82,
+      "post_mix_all_tables_recalled_rate": 0.9213,
+      "avg_pre_mix_tables": 2.9775,
+      "avg_post_mix_tables": 1.7303
+    },
+    "sql_self_repair_ablation": {
+      "sql_generated_count": 86,
+      "first_attempt_exec_ok_count": 84,
+      "first_attempt_exec_ok_rate": 0.9767,
+      "final_exec_ok_count": 86,
+      "final_exec_ok_rate": 1.0,
+      "first_attempt_ex_count": 45,
+      "first_attempt_ex_rate": 0.5056,
+      "final_ex_count": 46,
+      "final_ex_rate": 0.5169,
+      "repair_triggered_count": 2,
+      "exec_rescued_by_repair_count": 2,
+      "ex_rescued_by_repair_count": 1
+    },
+    "error_funnel": {
+      "passed": 46,
+      "1_feasibility_rejected": 3,
+      "2_table_recall_missed": 5,
+      "3_evidence_missed": 6,
+      "4_sql_exec_error_after_repairs": 0,
+      "5_sql_logic_mismatch": 29
+    },
+    "node_errors": 0,
+    "group_name": "glm5_full_california_schools_89",
+    "quota_exhausted": false
+  },
+  "slice_california_schools_30": {
+    "total": 30,
+    "ex_count": 13,
+    "ex_rate": 0.4333,
+    "empty_match_count": 0,
+    "by_difficulty": {
+      "simple": {
+        "count": 18,
+        "ex_count": 9,
+        "ex_rate": 0.5
+      },
+      "moderate": {
+        "count": 10,
+        "ex_count": 4,
+        "ex_rate": 0.4
+      },
+      "challenging": {
+        "count": 2,
+        "ex_count": 0,
+        "ex_rate": 0.0
+      }
+    },
+    "feasibility_false_reject_count": 2,
+    "feasibility_false_reject_rate": 0.0667,
+    "mix_selector_ablation": {
+      "pre_mix_all_tables_recalled_count": 30,
+      "pre_mix_all_tables_recalled_rate": 1.0,
+      "post_mix_all_tables_recalled_count": 28,
+      "post_mix_all_tables_recalled_rate": 0.9333,
+      "avg_pre_mix_tables": 3.0,
+      "avg_post_mix_tables": 1.7333
+    },
+    "sql_self_repair_ablation": {
+      "sql_generated_count": 28,
+      "first_attempt_exec_ok_count": 28,
+      "first_attempt_exec_ok_rate": 1.0,
+      "final_exec_ok_count": 28,
+      "final_exec_ok_rate": 1.0,
+      "first_attempt_ex_count": 13,
+      "first_attempt_ex_rate": 0.4333,
+      "final_ex_count": 13,
+      "final_ex_rate": 0.4333,
+      "repair_triggered_count": 0,
+      "exec_rescued_by_repair_count": 0,
+      "ex_rescued_by_repair_count": 0
+    },
+    "error_funnel": {
+      "passed": 13,
+      "1_feasibility_rejected": 2,
+      "2_table_recall_missed": 2,
+      "3_evidence_missed": 5,
+      "4_sql_exec_error_after_repairs": 0,
+      "5_sql_logic_mismatch": 8
+    },
+    "node_errors": 0,
+    "group_name": "glm5_slice_california_schools_30"
+  },
+  "holdout_debit_card_15": {
+    "group_name": "glm5_holdout_debit_card_15",
+    "quota_exhausted": true,
+    "elapsed_seconds": 0.81
+  },
+  "holdout_debit_card_15_glm51": {
+    "total": 15,
+    "ex_count": 9,
+    "ex_rate": 0.6,
+    "empty_match_count": 0,
+    "by_difficulty": {
+      "simple": {
+        "count": 10,
+        "ex_count": 7,
+        "ex_rate": 0.7
+      },
+      "moderate": {
+        "count": 4,
+        "ex_count": 2,
+        "ex_rate": 0.5
+      },
+      "challenging": {
+        "count": 1,
+        "ex_count": 0,
+        "ex_rate": 0.0
+      }
+    },
+    "feasibility_false_reject_count": 0,
+    "feasibility_false_reject_rate": 0.0,
+    "mix_selector_ablation": {
+      "pre_mix_all_tables_recalled_count": 12,
+      "pre_mix_all_tables_recalled_rate": 0.8,
+      "post_mix_all_tables_recalled_count": 13,
+      "post_mix_all_tables_recalled_rate": 0.8667,
+      "avg_pre_mix_tables": 2.8,
+      "avg_post_mix_tables": 1.5333
+    },
+    "sql_self_repair_ablation": {
+      "sql_generated_count": 15,
+      "first_attempt_exec_ok_count": 15,
+      "first_attempt_exec_ok_rate": 1.0,
+      "final_exec_ok_count": 15,
+      "final_exec_ok_rate": 1.0,
+      "first_attempt_ex_count": 9,
+      "first_attempt_ex_rate": 0.6,
+      "final_ex_count": 9,
+      "final_ex_rate": 0.6,
+      "repair_triggered_count": 0,
+      "exec_rescued_by_repair_count": 0,
+      "ex_rescued_by_repair_count": 0
+    },
+    "error_funnel": {
+      "passed": 9,
+      "1_feasibility_rejected": 0,
+      "2_table_recall_missed": 1,
+      "3_evidence_missed": 1,
+      "4_sql_exec_error_after_repairs": 0,
+      "5_sql_logic_mismatch": 4
+    },
+    "node_errors": 0,
+    "group_name": "glm51_holdout_debit_card_15",
+    "quota_exhausted": false,
+    "elapsed_seconds": 2306.86
+  }
+}

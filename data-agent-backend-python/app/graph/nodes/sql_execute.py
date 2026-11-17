@@ -1,6 +1,7 @@
 import json
 import logging
 import sqlite3
+import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -106,10 +107,16 @@ class SqlExecuteNode:
             error_msg = validation_err
             logger.warning(f"[SqlExecuteNode] AST validation rejected SQL: {error_msg}")
         else:
-            # 2. 建立物理只读连接（mode=ro 保护机制）
+            # 2. 建立物理只读连接（mode=ro + 10s 查询超时保护）
+            conn: Optional[sqlite3.Connection] = None
             try:
                 db_uri = f"file:{db_path.resolve()}?mode=ro"
-                conn = sqlite3.connect(db_uri, uri=True)
+                conn = sqlite3.connect(db_uri, uri=True, timeout=10.0)
+                deadline = time.monotonic() + 10.0
+                conn.set_progress_handler(
+                    lambda: 1 if time.monotonic() > deadline else 0,
+                    10000,
+                )
                 cursor = conn.cursor()
                 cursor.execute(sql)
 
@@ -128,7 +135,6 @@ class SqlExecuteNode:
                     count += 1
 
                 cursor.close()
-                conn.close()
 
                 logger.info(
                     f"[SqlExecuteNode] SQL executed successfully: {len(clean_columns)} columns, {len(raw_data)} rows returned"
@@ -136,6 +142,12 @@ class SqlExecuteNode:
             except Exception as e:
                 logger.error(f"[SqlExecuteNode] SQLite execution error: {e}")
                 error_msg = str(e)
+            finally:
+                if conn is not None:
+                    try:
+                        conn.close()
+                    except Exception:
+                        pass
 
         # 3. 错误自纠错路由判断
         if error_msg is not None:

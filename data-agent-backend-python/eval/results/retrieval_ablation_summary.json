@@ -1,0 +1,87 @@
+{
+  "total_questions": 153,
+  "databases": [
+    "california_schools",
+    "debit_card_specializing"
+  ],
+  "leakage_audit": {
+    "top1_exact_before_count": 153,
+    "top1_exact_before_rate": 1.0,
+    "top4_exact_before_count": 153,
+    "top4_exact_before_rate": 1.0,
+    "top1_exact_after_count": 0,
+    "top4_exact_after_count": 0,
+    "avg_top1_score_before": 1.0,
+    "avg_top1_score_after": 0.712
+  },
+  "threshold_scan": {
+    "0.20": {
+      "gold_table_recall": 0.988,
+      "all_tables_recalled_rate": 0.9739,
+      "all_tables_recalled_count": 149,
+      "avg_seed_tables": 3.4052,
+      "avg_pruned_columns": 21.281
+    },
+    "0.30": {
+      "gold_table_recall": 0.976,
+      "all_tables_recalled_rate": 0.9477,
+      "all_tables_recalled_count": 145,
+      "avg_seed_tables": 3.1373,
+      "avg_pruned_columns": 18.5098
+    },
+    "0.40": {
+      "gold_table_recall": 0.8932,
+      "all_tables_recalled_rate": 0.8105,
+      "all_tables_recalled_count": 124,
+      "avg_seed_tables": 2.451,
+      "avg_pruned_columns": 8.2941
+    },
+    "0.50": {
+      "gold_table_recall": 0.7505,
+      "all_tables_recalled_rate": 0.5425,
+      "all_tables_recalled_count": 83,
+      "avg_seed_tables": 1.6405,
+      "avg_pruned_columns": 14.2941
+    },
+    "0.60": {
+      "gold_table_recall": 0.7081,
+      "all_tables_recalled_rate": 0.4641,
+      "all_tables_recalled_count": 71,
+      "avg_seed_tables": 1.4575,
+      "avg_pruned_columns": 23.3856
+    }
+  },
+  "fk_expansion_at_040": {
+    "fk_off_gold_table_recall": 0.8932,
+    "fk_on_gold_table_recall": 0.9749,
+    "fk_off_all_tables_recalled_rate": 0.8105,
+    "fk_on_all_tables_recalled_rate": 0.9412,
+    "fk_off_all_tables_recalled_count": 124,
+    "fk_on_all_tables_recalled_count": 144,
+    "missed_before_fk_count": 29,
+    "rescued_by_fk_count": 20,
+    "avg_tables_fk_off": 2.451,
+    "avg_tables_fk_on": 2.7582,
+    "avg_pruned_columns_fk_off": 8.2941,
+    "avg_pruned_columns_fk_on": 8.7059
+  },
+  "per_db": {
+    "california_schools": {
+      "count": 89,
+      "top1_exact_before": 89,
+      "top4_exact_before": 89,
+      "fk_off_040_all_tables_recalled_rate": 0.8652,
+      "fk_on_040_all_tables_recalled_rate": 1.0,
+      "fk_rescued_count": 12
+    },
+    "debit_card_specializing": {
+      "count": 64,
+      "top1_exact_before": 64,
+      "top4_exact_before": 64,
+      "fk_off_040_all_tables_recalled_rate": 0.7344,
+      "fk_on_040_all_tables_recalled_rate": 0.8594,
+      "fk_rescued_count": 8
+    }
+  },
+  "elapsed_seconds": 86.18
+}

@@ -21,6 +21,7 @@
 - [LangGraph 状态机编排拓扑](#-langgraph-状态机编排拓扑)
 - [核心工程设计亮点](#-核心工程设计亮点)
 - [运行效果预览](#-运行效果预览)
+- [基准评测与消融实验](#-基准评测与消融实验-bird-benchmark)
 - [技术栈清单](#️-技术栈清单)
 - [快速启动 (3 分钟体验)](#-快速启动-3-分钟体验)
 - [项目目录结构](#-项目目录结构)
@@ -88,6 +89,10 @@ flowchart TD
 - **错误堆栈反思自愈**：当 SQL 执行报错时，状态机自动捕获数据库异常堆栈并回跳 `SqlGeneratorNode` 切换至 `sql-error-fixer` 反思模式，最多自动修复重试 3 次。
 - **隔离沙箱与防爆采样**：Python 高阶统计脚本通过 `stdin` 标准输入安全接收前序 SQL 数据，运行于 `Docker` 容器（无 Docker 环境平滑降级受限 `Subprocess`）；最终进入报告节点前对超过 20 行的结果集自动采样截断，防止大模型上下文溢出。
 
+### 4. 防泄漏基准评测与五级归因闭环 (`BIRD Benchmark + Leave-One-Out`)
+- **留一法去泄漏隔离**：在 `VectorRetriever.search_questions` 内置向后兼容的 `leave_one_out` 评测钩子，自动屏蔽当前评测题自身对应的历史问答样本，杜绝原题库泄漏导致的分数虚高。
+- **低基数枚举采样与契约对齐**：对候选列进行只读 SQLite（`mode=ro` + 2s 超时）低基数采样注入 `Examples: [...]`，扩容业务术语窗口（`top_k: 4 -> 8`），并强化 `Planner` 单条 SQL 闭环与原题返回列核对，建立从 **检索消融 → EX 评测 → 5 阶段错题漏斗归因 → 留出集回归** 的量化迭代闭环。
+
 ---
 
 ## 📊 运行效果预览
@@ -95,6 +100,32 @@ flowchart TD
 <p align="center">
   <img src="./assets/readme/report.png" alt="Data-Agent 商业分析报告流式产出预览" width="82%" />
 </p>
+
+---
+
+## 📈 基准评测与消融实验 (BIRD Benchmark)
+
+基于 BIRD `dev_20240627`（`california_schools` 89 题 + `debit_card_specializing` 零售交易库 64 题）及 `sqlglot` AST / 只读 SQLite EX 评测器开展全链路量化评测，完整实验日志与逐题分析见 [`data-agent-backend-python/eval/REPORT.md`](./data-agent-backend-python/eval/REPORT.md)：
+
+<p align="center">
+  <img src="./assets/readme/eval_benchmark.svg" alt="Data-Agent BIRD Benchmark 量化评测与消融实验总览" width="100%" />
+</p>
+
+### 1. Schema 检索阈值与外键拓扑消融（全量 153 题）
+
+| 实验配置 | 全表召回率 | 平均表数 | 平均列数 | 核心结论 |
+| :--- | :---: | :---: | :---: | :--- |
+| 基准阈值 `0.20`（无外键） | 97.39% (149/153) | 3.41 | 21.28 | 召回高但引入较多噪声列 |
+| 基准阈值 `0.40`（无外键） | 81.05% (124/153) | 2.45 | **8.29** | 上下文最精简（列数压缩 61%） |
+| **基准阈值 `0.40` + 外键拓扑扩展** | **94.12% (144/153)** | **2.76** | **8.71** | **救回 20/29 (68.97%) 漏表题**（`california_schools` 达 **100.00%**） |
+
+### 2. 防泄漏审计与端到端 EX 提升（均开启 Leave-One-Out）
+
+| 评测阶段与模型 | `california_schools` EX | 零售库 `debit_card_specializing` EX | SQL 最终可执行率 |
+| :--- | :---: | :---: | :---: |
+| 未隔离对照（含 `100%` 原题泄漏，`qwen3.8-max`） | `76.67%` (23/30) | — | 100.00% |
+| **优化前留一法真实基线**（`qwen3.8-max`） | **`43.33%`** (13/30) | **`46.67%`** (7/15) | 100.00% |
+| **4 项工程与契约优化后**（`glm-5` 89 题 / `glm-5.1` 15 题） | **`51.69%`** (46/89, **+8.36 pp**) | **`60.00%`** (9/15, **+13.33 pp**) | **100.00%** (86/86 & 15/15) |
 
 ---
 
@@ -107,7 +138,7 @@ flowchart TD
 | **向量与关系元数据存储** | `PostgreSQL 16` · `pgvector (HNSW 余弦索引)` · `psycopg 3` |
 | **执行安全与计算沙箱** | `SQLGlot (AST 静态校验)` · `SQLite3 (URI Read-Only)` · `Docker / Subprocess` · `Pandas / NumPy` |
 | **前端交互与可视化** | `Vue 3.5` · `TypeScript` · `Vite` · `Pinia` · `Element Plus` · `@a2a-js/sdk` · `md-editor-v3` |
-| **质量保障与评测** | `Pytest` · `Pytest-Asyncio` · 内置 `BIRD Benchmark` 验证数据库（44 项单测与集成测试） |
+| **质量保障与评测** | `Pytest` · `Pytest-Asyncio` · `BIRD Benchmark`（153 题检索消融 + 端到端 EX / 五级归因漏斗） |
 
 ---
 
@@ -159,11 +190,18 @@ pnpm dev
 
 浏览器访问 **`http://localhost:3500`**，选择数据库（如内置开箱即用的 `california_schools`），输入自然语言问题即可实时观察完整图节点流转轨迹！
 
-### 5. 运行自动化测试套件
+### 5. 运行自动化测试与基准评测套件
 
 ```bash
 cd data-agent-backend-python
-uv run pytest tests/ -m "not e2e" -v
+# 1. 单元测试与安全拦截回归
+uv run pytest tests/ eval/test_score.py -m "not e2e" -v
+
+# 2. 全量 153 题检索与外键拓扑消融
+uv run python -m eval.run_retrieval_ablation
+
+# 3. 端到端 Text2SQL Leave-One-Out 评测与归因漏斗
+uv run python -m eval.run_e2e_eval --phase full_glm5 --workers 6
 ```
 
 ---
@@ -172,7 +210,7 @@ uv run pytest tests/ -m "not e2e" -v
 
 ```text
 .
-├── assets/readme/                    # 系统架构矢量图与前端运行预览图
+├── assets/readme/                    # 系统架构图、评测实验总览图与前端运行预览图
 ├── data-agent-backend-python/        # Python LangGraph 后端核心工程
 │   ├── app/
 │   │   ├── a2a/                      # A2A JSON-RPC 协议路由与 SSE 流式推送
@@ -181,6 +219,7 @@ uv run pytest tests/ -m "not e2e" -v
 │   │   ├── retrieval/                # pgvector 向量检索器与表/列/外键元数据仓库
 │   │   └── shared/                   # Docker / Subprocess 双模 Python 安全执行沙箱
 │   ├── data/                         # PostgreSQL 初始化 SQL 与 BIRD 评测数据集
+│   ├── eval/                         # Leave-One-Out 评测脚本、EX 打分器、归因日志与 REPORT.md
 │   ├── tests/                        # 单元测试与节点链路集成测试集
 │   ├── main.py                       # FastAPI 服务入口
 │   ├── pyproject.toml                # 项目依赖与构建配置

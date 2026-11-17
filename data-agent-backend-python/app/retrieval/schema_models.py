@@ -45,6 +45,9 @@ class Schema(BaseModel):
     db_tables: list[DbTableSchemaView] = Field(default_factory=list, alias="dbTables")
     db_foreign_keys: list[DbForeignKeySchemaView] = Field(default_factory=list, alias="dbForeignKeys")
     enable_example_sampling: bool = Field(default=False, alias="enableExampleSampling")
+    examples_by_table_col: dict[str, dict[str, list[str]]] = Field(
+        default_factory=dict, alias="examplesByTableCol"
+    )
 
     def build_table_prompt(
         self, db_table: DbTableSchemaView, examples_by_column: Optional[dict[str, list[str]]] = None
@@ -63,7 +66,12 @@ class Schema(BaseModel):
     def build_scheme_prompt(self) -> str:
         sb = [f"【DB_ID】 {self.database_id}\n"]
         for table in self.db_tables:
-            sb.append(self.build_table_prompt(table))
+            sb.append(
+                self.build_table_prompt(
+                    table,
+                    examples_by_column=self.examples_by_table_col.get(table.name, {}),
+                )
+            )
         keys = "\n".join(fk.to_expression() for fk in self.db_foreign_keys)
         sb.append(f"【Foreign keys】\n{keys}")
         return "".join(sb)

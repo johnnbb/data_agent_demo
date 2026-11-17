@@ -109,3 +109,33 @@ def test_table_relation_node_e2e():
     table_names = [t["name"] for t in relation_output["dbTables"]]
     assert "schools" in table_names or "frpm" in table_names
 
+
+def test_sample_column_examples_and_schema_prompt_roundtrip():
+    """验证低基数枚举值采样及 Schema.model_dump -> model_validate -> build_scheme_prompt 透传链路"""
+    from app.retrieval.schema_models import DbColumnSchemaView, DbTableSchemaView, Schema
+
+    node = TableRelationNode()
+    frpm_table = DbTableSchemaView(
+        name="frpm",
+        columns=[
+            DbColumnSchemaView(name="CDSCode", type="TEXT", is_primary_key=True),
+            DbColumnSchemaView(name="Charter Funding Type", type="TEXT"),
+            DbColumnSchemaView(name="Educational Option Type", type="TEXT"),
+        ],
+    )
+    examples = node.sample_column_examples("california_schools", [frpm_table])
+    assert "frpm" in examples
+    assert "'Directly funded'" in examples["frpm"]["Charter Funding Type"]
+
+    schema_obj = Schema(
+        database_id="california_schools",
+        db_tables=[frpm_table],
+        examples_by_table_col=examples,
+    )
+    dumped = schema_obj.model_dump(by_alias=True)
+    assert "examplesByTableCol" in dumped
+
+    rehydrated = Schema.model_validate(dumped)
+    prompt = rehydrated.build_scheme_prompt()
+    assert "'Directly funded'" in prompt
+

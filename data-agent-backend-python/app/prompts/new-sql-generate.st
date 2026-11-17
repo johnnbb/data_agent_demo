@@ -46,6 +46,9 @@
     确保没有幻觉字段，并且逻辑与【当前执行步骤】完全一致。
     如果使用了【扩展语义查找规则】中的 SQL_DATASET，则只能依赖该规则声明的输出字段和推荐关联方式，不要自行改写其业务规则。
     如果命中了【枚举值语义映射规则】，必须使用映射后的真实编码值进行过滤。
+    *   **返回列对齐用户原题**：当执行步骤就是回答用户的最终查询时，必须对照【5. 全局任务背景 (用户原始问题)】核对 `SELECT` 子句的返回列，严禁遗漏用户在原题中明确要求输出的列（例如原题末尾要求 `Indicate the name of the school` 或 `State the names and full communication address`），也严禁多选原题未要求的辅助列。
+    *   **严格遵循业务知识公式与字段映射**：若【2. 业务知识】中给出了指标计算公式（如 `A / B`）、特定表名/列名映射（如 `Charter School (Y/N) = 1`、`Full communication address = Street, City, State, Zip`），必须优先严格按该公式和列集合编写 SQL，不要用相近字段替代。
+    *   **严格匹配枚举值大小写 (`Examples: [...]`)**：`WHERE` 条件中的字符串字面量必须与【1. 数据库 Schema】中该列的 `Examples: [...]` 样本值大小写和拼写完全一致（例如 `Examples` 中为 `'Directly funded'` 时，严禁写成 `'Directly Funded'`）。
 
 6.  **安全转义 (关键)**：
     *   **必须**对所有表名和列名进行转义或者加引号，以避免保留字冲突（例如列名为 `order`, `group`, `user` 时）。

@@ -91,6 +91,32 @@ class VectorRetriever:
         """检索相关的业务口径与术语 (Evidence)"""
         return self.search(query, database_id, VectorType.GLOSSARY_KNOWLEDGE, top_k=top_k)
 
-    def search_questions(self, query: str, database_id: str, top_k: int = 3) -> list[RetrievalResult]:
-        """检索历史上最相似的问答范例 (Few-Shot 示例)"""
-        return self.search(query, database_id, VectorType.QUESTION_KNOWLEDGE, top_k=top_k)
+    def search_questions(
+        self,
+        query: str,
+        database_id: str,
+        top_k: int = 3,
+        exclude_knowledge_ids: Optional[list[str]] = None,
+        exclude_question: Optional[str] = None,
+    ) -> list[RetrievalResult]:
+        """检索历史上最相似的问答范例 (Few-Shot 示例)，支持按 knowledgeId 或题面文本做 Leave-One-Out 过滤"""
+        if not exclude_knowledge_ids and not exclude_question:
+            return self.search(query, database_id, VectorType.QUESTION_KNOWLEDGE, top_k=top_k)
+
+        fetch_k = top_k + max(len(exclude_knowledge_ids or []), 5)
+        raw_results = self.search(query, database_id, VectorType.QUESTION_KNOWLEDGE, top_k=fetch_k)
+
+        exclude_id_set = {str(kid) for kid in (exclude_knowledge_ids or []) if kid}
+        normalized_exclude_q = exclude_question.strip().lower() if exclude_question else None
+
+        filtered: list[RetrievalResult] = []
+        for r in raw_results:
+            kid = r.metadata.get("knowledgeId")
+            if kid is not None and str(kid) in exclude_id_set:
+                continue
+            if normalized_exclude_q and r.content.strip().lower() == normalized_exclude_q:
+                continue
+            filtered.append(r)
+            if len(filtered) >= top_k:
+                break
+        return filtered

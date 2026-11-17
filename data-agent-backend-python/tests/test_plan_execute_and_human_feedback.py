@@ -13,11 +13,27 @@ def test_human_feedback_node_approved():
     node = HumanFeedbackNode()
     state = {
         StateKey.CONFIRMATION_APPROVED.value: True,
-        StateKey.CONFIRMATION_FEEDBACK.value: "Looks good!",
+        StateKey.CONFIRMATION_FEEDBACK.value: "  Looks good!  ",
         StateKey.PLAN_REPAIR_COUNT.value: 1,
     }
     result = node(state)
     assert result[StateKey.HUMAN_NEXT_NODE.value] == NodeName.PLAN_EXECUTION.value
+    assert result[StateKey.CONFIRMATION_APPROVED.value] is True
+    assert result[StateKey.CONFIRMATION_FEEDBACK.value] == "Looks good!"
+    assert StateKey.PLAN_REPAIR_COUNT.value not in result
+
+
+def test_human_feedback_node_approved_default_feedback():
+    node = HumanFeedbackNode()
+    state = {
+        StateKey.CONFIRMATION_APPROVED.value: True,
+        StateKey.CONFIRMATION_FEEDBACK.value: "   ",
+        StateKey.PLAN_REPAIR_COUNT.value: 1,
+    }
+    result = node(state)
+    assert result[StateKey.HUMAN_NEXT_NODE.value] == NodeName.PLAN_EXECUTION.value
+    assert result[StateKey.CONFIRMATION_APPROVED.value] is True
+    assert result[StateKey.CONFIRMATION_FEEDBACK.value] == "用户确认继续执行"
     assert StateKey.PLAN_REPAIR_COUNT.value not in result
 
 

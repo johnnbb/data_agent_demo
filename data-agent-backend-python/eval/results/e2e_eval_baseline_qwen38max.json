@@ -1,0 +1,191 @@
+{
+  "config": {
+    "chat_model": "qwen3.8-max",
+    "california_schools_sample_size": 30,
+    "california_schools_difficulty": {
+      "moderate": 10,
+      "simple": 18,
+      "challenging": 2
+    },
+    "debit_card_holdout_size": 15,
+    "debit_card_difficulty": {
+      "simple": 10,
+      "moderate": 4,
+      "challenging": 1
+    }
+  },
+  "group_a_with_leakage": {
+    "total": 30,
+    "ex_count": 23,
+    "ex_rate": 0.7667,
+    "empty_match_count": 0,
+    "by_difficulty": {
+      "simple": {
+        "count": 18,
+        "ex_count": 15,
+        "ex_rate": 0.8333
+      },
+      "moderate": {
+        "count": 10,
+        "ex_count": 7,
+        "ex_rate": 0.7
+      },
+      "challenging": {
+        "count": 2,
+        "ex_count": 1,
+        "ex_rate": 0.5
+      }
+    },
+    "feasibility_false_reject_count": 0,
+    "feasibility_false_reject_rate": 0.0,
+    "mix_selector_ablation": {
+      "pre_mix_all_tables_recalled_count": 30,
+      "pre_mix_all_tables_recalled_rate": 1.0,
+      "post_mix_all_tables_recalled_count": 30,
+      "post_mix_all_tables_recalled_rate": 1.0,
+      "avg_pre_mix_tables": 3.0,
+      "avg_post_mix_tables": 1.6667
+    },
+    "sql_self_repair_ablation": {
+      "sql_generated_count": 30,
+      "first_attempt_exec_ok_count": 30,
+      "first_attempt_exec_ok_rate": 1.0,
+      "final_exec_ok_count": 30,
+      "final_exec_ok_rate": 1.0,
+      "first_attempt_ex_count": 23,
+      "first_attempt_ex_rate": 0.7667,
+      "final_ex_count": 23,
+      "final_ex_rate": 0.7667,
+      "repair_triggered_count": 0,
+      "exec_rescued_by_repair_count": 0,
+      "ex_rescued_by_repair_count": 0
+    },
+    "error_funnel": {
+      "passed": 23,
+      "1_feasibility_rejected": 0,
+      "2_table_recall_missed": 0,
+      "3_evidence_missed": 1,
+      "4_sql_exec_error_after_repairs": 0,
+      "5_sql_logic_mismatch": 6
+    },
+    "node_errors": 0,
+    "group_name": "group_a_with_leakage",
+    "elapsed_seconds": 213.24
+  },
+  "group_b_baseline": {
+    "total": 30,
+    "ex_count": 13,
+    "ex_rate": 0.4333,
+    "empty_match_count": 0,
+    "by_difficulty": {
+      "simple": {
+        "count": 18,
+        "ex_count": 9,
+        "ex_rate": 0.5
+      },
+      "moderate": {
+        "count": 10,
+        "ex_count": 3,
+        "ex_rate": 0.3
+      },
+      "challenging": {
+        "count": 2,
+        "ex_count": 1,
+        "ex_rate": 0.5
+      }
+    },
+    "feasibility_false_reject_count": 0,
+    "feasibility_false_reject_rate": 0.0,
+    "mix_selector_ablation": {
+      "pre_mix_all_tables_recalled_count": 30,
+      "pre_mix_all_tables_recalled_rate": 1.0,
+      "post_mix_all_tables_recalled_count": 28,
+      "post_mix_all_tables_recalled_rate": 0.9333,
+      "avg_pre_mix_tables": 3.0,
+      "avg_post_mix_tables": 1.7667
+    },
+    "sql_self_repair_ablation": {
+      "sql_generated_count": 30,
+      "first_attempt_exec_ok_count": 30,
+      "first_attempt_exec_ok_rate": 1.0,
+      "final_exec_ok_count": 30,
+      "final_exec_ok_rate": 1.0,
+      "first_attempt_ex_count": 13,
+      "first_attempt_ex_rate": 0.4333,
+      "final_ex_count": 13,
+      "final_ex_rate": 0.4333,
+      "repair_triggered_count": 0,
+      "exec_rescued_by_repair_count": 0,
+      "ex_rescued_by_repair_count": 0
+    },
+    "error_funnel": {
+      "passed": 13,
+      "1_feasibility_rejected": 0,
+      "2_table_recall_missed": 2,
+      "3_evidence_missed": 3,
+      "4_sql_exec_error_after_repairs": 0,
+      "5_sql_logic_mismatch": 12
+    },
+    "node_errors": 0,
+    "group_name": "group_b_leave_one_out_baseline",
+    "elapsed_seconds": 214.21
+  },
+  "holdout_pre_fix": {
+    "total": 15,
+    "ex_count": 7,
+    "ex_rate": 0.4667,
+    "empty_match_count": 0,
+    "by_difficulty": {
+      "simple": {
+        "count": 10,
+        "ex_count": 5,
+        "ex_rate": 0.5
+      },
+      "moderate": {
+        "count": 4,
+        "ex_count": 2,
+        "ex_rate": 0.5
+      },
+      "challenging": {
+        "count": 1,
+        "ex_count": 0,
+        "ex_rate": 0.0
+      }
+    },
+    "feasibility_false_reject_count": 0,
+    "feasibility_false_reject_rate": 0.0,
+    "mix_selector_ablation": {
+      "pre_mix_all_tables_recalled_count": 13,
+      "pre_mix_all_tables_recalled_rate": 0.8667,
+      "post_mix_all_tables_recalled_count": 13,
+      "post_mix_all_tables_recalled_rate": 0.8667,
+      "avg_pre_mix_tables": 2.8667,
+      "avg_post_mix_tables": 1.5333
+    },
+    "sql_self_repair_ablation": {
+      "sql_generated_count": 15,
+      "first_attempt_exec_ok_count": 15,
+      "first_attempt_exec_ok_rate": 1.0,
+      "final_exec_ok_count": 15,
+      "final_exec_ok_rate": 1.0,
+      "first_attempt_ex_count": 7,
+      "first_attempt_ex_rate": 0.4667,
+      "final_ex_count": 7,
+      "final_ex_rate": 0.4667,
+      "repair_triggered_count": 0,
+      "exec_rescued_by_repair_count": 0,
+      "ex_rescued_by_repair_count": 0
+    },
+    "error_funnel": {
+      "passed": 7,
+      "1_feasibility_rejected": 0,
+      "2_table_recall_missed": 1,
+      "3_evidence_missed": 3,
+      "4_sql_exec_error_after_repairs": 0,
+      "5_sql_logic_mismatch": 4
+    },
+    "node_errors": 0,
+    "group_name": "holdout_pre_fix",
+    "elapsed_seconds": 113.77
+  }
+}

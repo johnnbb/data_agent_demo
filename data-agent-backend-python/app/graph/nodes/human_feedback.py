@@ -28,21 +28,24 @@ class HumanFeedbackNode:
             }
 
         approved = state.get(StateKey.CONFIRMATION_APPROVED.value, False)
+        feedback_content = state.get(StateKey.CONFIRMATION_FEEDBACK.value, "") or ""
+        feedback_str = (
+            feedback_content.strip()
+            if isinstance(feedback_content, str)
+            else str(feedback_content)
+        )
         if approved:
+            final_feedback = feedback_str or "用户确认继续执行"
             logger.info(
                 "[HumanFeedbackNode] User approved the execution plan. Routing to PLAN_EXECUTE_NODE."
             )
             return {
                 StateKey.HUMAN_NEXT_NODE.value: NodeName.PLAN_EXECUTION.value,
+                StateKey.CONFIRMATION_APPROVED.value: True,
+                StateKey.CONFIRMATION_FEEDBACK.value: final_feedback,
             }
         else:
-            feedback_content = state.get(StateKey.CONFIRMATION_FEEDBACK.value, "") or ""
-            feedback_str = (
-                feedback_content.strip()
-                if isinstance(feedback_content, str)
-                else str(feedback_content)
-            )
-            final_feedback = feedback_str if feedback_str else "Plan rejected by user"
+            final_feedback = feedback_str or "Plan rejected by user"
             logger.info(
                 f"[HumanFeedbackNode] User rejected the plan. Routing back to PLANNER_NODE. "
                 f"Repair count: {count + 1}, Feedback: '{final_feedback}'"

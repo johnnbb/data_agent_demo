@@ -1,6 +1,8 @@
 import json
 import logging
 import re
+import sqlite3
+import time
 from dataclasses import dataclass
 from typing import Any, Optional
 from openai import OpenAI
@@ -8,6 +10,7 @@ from openai import OpenAI
 from app.config import settings
 from app.graph.state import AgentState
 from app.graph.spec import StateKey
+from app.graph.nodes.sql_execute import locate_sqlite_database
 from app.prompts.manager import prompt_manager
 from app.retrieval.schema_models import (
     DbForeignKeySchemaView,
@@ -258,15 +261,110 @@ class TableRelationNode:
 
         logger.info(f"Mix selector filter tables: {filter_table_names}")
 
+        examples_by_table_col = self.sample_column_examples(database_id, filter_tables)
+
         final_schema = Schema(
             database_id=database_id,
             db_tables=filter_tables,
             db_foreign_keys=filter_foreign_keys,
+            examples_by_table_col=examples_by_table_col,
         )
 
         return {
             StateKey.TABLE_RELATION.value: final_schema.model_dump(by_alias=True)
         }
+
+    @staticmethod
+    def _quote_ident(name: str) -> str:
+        return '"' + name.replace('"', '""') + '"'
+
+    @staticmethod
+    def _should_sample_column(col: Any) -> bool:
+        col_type = (getattr(col, "type", None) or "").strip().upper()
+        if col_type == "" or "TEXT" in col_type or "VARCHAR" in col_type:
+            return True
+        col_name_lower = (getattr(col, "name", None) or "").lower()
+        enum_keywords = (
+            "type",
+            "status",
+            "code",
+            "name",
+            "option",
+            "virtual",
+            "charter",
+            "magnet",
+            "grade",
+            "segment",
+            "currency",
+        )
+        return any(kw in col_name_lower for kw in enum_keywords)
+
+    def sample_column_examples(
+        self, database_id: str, tables: list[DbTableSchemaView]
+    ) -> dict[str, dict[str, list[str]]]:
+        """从只读 SQLite 数据库采样低基数枚举值或短文本样本，注入 Schema Examples 消除字面量大小写幻觉。"""
+        db_path = locate_sqlite_database(database_id)
+        if not db_path or not db_path.exists():
+            return {}
+
+        examples_by_table_col: dict[str, dict[str, list[str]]] = {}
+        conn: Optional[sqlite3.Connection] = None
+        try:
+            db_uri = f"file:{db_path.resolve()}?mode=ro"
+            conn = sqlite3.connect(db_uri, uri=True, timeout=2.0)
+            deadline = time.monotonic() + 2.0
+
+            def _progress_handler() -> int:
+                return 1 if time.monotonic() > deadline else 0
+
+            conn.set_progress_handler(_progress_handler, 10000)
+            cursor = conn.cursor()
+
+            for table in tables:
+                t_ident = self._quote_ident(table.name)
+                table_examples: dict[str, list[str]] = {}
+                for col in table.columns:
+                    if time.monotonic() > deadline:
+                        break
+                    if not self._should_sample_column(col):
+                        continue
+                    c_ident = self._quote_ident(col.name)
+                    sql = (
+                        f"SELECT DISTINCT {c_ident} FROM {t_ident} "
+                        f"WHERE {c_ident} IS NOT NULL AND {c_ident} != '' LIMIT 16"
+                    )
+                    try:
+                        cursor.execute(sql)
+                        rows = cursor.fetchall()
+                    except Exception as exc:
+                        logger.debug(
+                            f"[TableRelationNode] Column sampling skipped for {table.name}.{col.name}: {exc}"
+                        )
+                        continue
+
+                    if not rows:
+                        continue
+                    if 1 <= len(rows) <= 15:
+                        samples = [f"'{str(r[0])[:50]}'" for r in rows[:5]]
+                    else:
+                        samples = [f"'{str(r[0])[:30]}'" for r in rows[:2]]
+                    if samples:
+                        table_examples[col.name] = samples
+
+                if table_examples:
+                    examples_by_table_col[table.name] = table_examples
+
+            cursor.close()
+        except Exception as exc:
+            logger.warning(f"[TableRelationNode] Failed to sample column examples for '{database_id}': {exc}")
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+
+        return examples_by_table_col
 
 
 table_relation_node = TableRelationNode()

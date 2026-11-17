@@ -45,3 +45,7 @@ class AgentState(TypedDict, total=False):
 
     # 最终业务报告产物（与前端大写常量对齐）
     REPORT_GENERATOR_NODE_OUTPUT: Optional[str]
+
+    # 离线评测控制键（可选，默认关闭）
+    leave_one_out: Optional[bool]
+    exclude_question_text: Optional[str]

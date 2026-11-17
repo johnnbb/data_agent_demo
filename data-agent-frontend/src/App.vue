@@ -14,6 +14,7 @@ import SqlExecutionNodeCard from '@/components/sql-execution-node-card.vue'
 import SqlGenerationNodeCard from '@/components/sql-generation-node-card.vue'
 import TableRelationNodeCard from '@/components/table-relation-node-card.vue'
 import { type AgentCard } from '@a2a-js/sdk'
+import { ElMessage } from 'element-plus'
 import { type Component, computed, markRaw, onMounted, reactive, ref, shallowRef } from 'vue'
 import {
   DATA_AGENT_ARTIFACT_OUTPUT,
@@ -125,8 +126,8 @@ const streamMessage = async (
   input: string,
   keepSteps = false,
   metadata?: Record<string, unknown>,
-) => {
-  if (!client.value || !input || isRunning.value) return
+): Promise<boolean> => {
+  if (!client.value || !input || isRunning.value) return false
   if (!keepSteps) {
     resetSteps()
   }
@@ -147,8 +148,14 @@ const streamMessage = async (
       },
     })
     for await (const event of stream) {
-      currentTaskId.value = 'taskId' in event ? event.taskId : currentTaskId.value
-      currentContextId.value = 'contextId' in event ? event.contextId : currentContextId.value
+      currentTaskId.value =
+        event.kind === 'task'
+          ? event.id
+          : 'taskId' in event && event.taskId
+            ? event.taskId
+            : currentTaskId.value
+      currentContextId.value =
+        'contextId' in event && event.contextId ? event.contextId : currentContextId.value
 
       if (event.kind === 'artifact-update') {
         const artifact = event.artifact
@@ -171,6 +178,12 @@ const streamMessage = async (
         awaitingConfirmation.value = true
       }
     }
+    return true
+  } catch (error) {
+    console.error('Failed to stream agent execution:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    ElMessage.error(`执行失败: ${message}`)
+    return false
   } finally {
     isRunning.value = false
   }
@@ -182,20 +195,29 @@ const handleSend = async () => {
 }
 
 const submitConfirmation = async () => {
-  awaitingConfirmation.value = false
   const approved = confirmationApproved.value
   const feedback = (confirmationFeedback.value || '').trim()
-  await streamMessage(feedback || (approved ? '确认继续' : '取消本次执行'), true, {
+  awaitingConfirmation.value = false
+  const ok = await streamMessage(feedback || (approved ? '确认继续' : '取消本次执行'), true, {
     [DATA_AGENT_MESSAGE_METADATA.CONFIRMATION_APPROVED]: approved,
     [DATA_AGENT_MESSAGE_METADATA.CONFIRMATION_FEEDBACK]:
       feedback || (approved ? '用户确认继续执行' : '用户取消本次执行'),
   })
+  if (!ok) {
+    awaitingConfirmation.value = true
+  }
 }
 
 onMounted(async () => {
-  client.value = await factory.createFromAgentCard(
-    (await api.a2acontroller.agentJson()) as AgentCard,
-  )
+  try {
+    client.value = await factory.createFromAgentCard(
+      (await api.a2acontroller.agentJson()) as AgentCard,
+    )
+  } catch (error) {
+    console.error('Failed to initialize A2A client:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    ElMessage.error(`初始化 Agent 客户端失败: ${message}`)
+  }
 })
 </script>
 
@@ -265,7 +287,15 @@ onMounted(async () => {
           <p>流式内容会实时追加到对应节点卡片里。</p>
         </div>
         <div class="timeline-panel__status">
-          {{ isRunning ? '正在执行' : orderedSteps.length ? '执行完成' : '等待开始' }}
+          {{
+            isRunning
+              ? '正在执行'
+              : awaitingConfirmation
+                ? '等待人工确认'
+                : orderedSteps.length
+                  ? '执行完成'
+                  : '等待开始'
+          }}
         </div>
       </div>
 

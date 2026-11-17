@@ -99,12 +99,22 @@ class EvidenceRecallNode:
         logger.info(f"Query rewrite: '{user_input}' -> '{rewrite_query}'")
 
         # 2. 检索业务术语
-        glossary_results = self.retriever.search_glossary(rewrite_query, database_id, top_k=4)
+        glossary_results = self.retriever.search_glossary(rewrite_query, database_id, top_k=8)
         glossary_texts = [r.content for r in glossary_results if r.content]
         glossary_knowledge_text = "\n".join(glossary_texts)
 
-        # 3. 检索历史问答
-        question_results = self.retriever.search_questions(rewrite_query, database_id, top_k=4)
+        # 3. 检索历史问答（支持评测场景 Leave-One-Out 防泄露过滤）
+        exclude_question = (
+            state.get(StateKey.EXCLUDE_QUESTION_TEXT.value) or user_input
+            if state.get(StateKey.LEAVE_ONE_OUT.value)
+            else None
+        )
+        question_results = self.retriever.search_questions(
+            rewrite_query,
+            database_id,
+            top_k=4,
+            exclude_question=exclude_question,
+        )
         knowledge_ids = [
             r.metadata.get("knowledgeId")
             for r in question_results

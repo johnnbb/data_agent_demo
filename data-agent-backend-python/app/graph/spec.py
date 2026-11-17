@@ -53,3 +53,7 @@ class StateKey(StrEnum):
     CONFIRMATION_APPROVED = "confirmationApproved"
     CONFIRMATION_FEEDBACK = "confirmationFeedback"
     HUMAN_NEXT_NODE = "HUMAN_NEXT_NODE"
+
+    # 离线评测控制键（可选，默认关闭）
+    LEAVE_ONE_OUT = "leave_one_out"
+    EXCLUDE_QUESTION_TEXT = "exclude_question_text"

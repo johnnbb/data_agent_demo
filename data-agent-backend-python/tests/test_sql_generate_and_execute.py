@@ -225,6 +225,72 @@ def test_plan_executor_edge():
     assert plan_executor_edge({}) == END
 
 
+def test_format_semantic_enum_rules_and_sql_generator_injection(monkeypatch):
+    """验证枚举值语义映射字典按当前 Schema 表列精准过滤，并真实注入 SqlGeneratorNode Prompt"""
+    from app.retrieval.enum_rules import format_semantic_enum_rules
+    from app.retrieval.schema_models import DbColumnSchemaView, DbTableSchemaView, Schema
+
+    # 1. 仅匹配已召回的表和列，避免注入无关表噪音
+    schema = Schema(
+        database_id="california_schools",
+        db_tables=[
+            DbTableSchemaView(
+                name="frpm",
+                columns=[
+                    DbColumnSchemaView(name="CDSCode", type="TEXT", is_primary_key=True),
+                    DbColumnSchemaView(name="Charter School (Y/N)", type="INTEGER"),
+                ],
+            )
+        ],
+    )
+    rules_text = format_semantic_enum_rules("california_schools", schema)
+    assert "frpm.Charter School (Y/N)" in rules_text
+    assert "'1' = 是 / 特许学校" in rules_text
+    assert "schools.Magnet" not in rules_text
+
+    # 未知数据库回退为 "(无)"
+    assert format_semantic_enum_rules("unknown_db", schema) == "(无)"
+
+    # 2. 验证 SqlGeneratorNode 渲染 new-sql-generate.st 时已不再写死 "(无)"
+    captured_messages = []
+
+    class DummyMessage:
+        content = 'SELECT "CDSCode" FROM "frpm" WHERE "Charter School (Y/N)" = 1;'
+
+    class DummyChoice:
+        message = DummyMessage()
+
+    class DummyResp:
+        choices = [DummyChoice()]
+
+    class DummyCompletions:
+        def create(self, **kwargs):
+            captured_messages.append(kwargs["messages"])
+            return DummyResp()
+
+    class DummyChat:
+        completions = DummyCompletions()
+
+    class DummyClient:
+        chat = DummyChat()
+
+    node = SqlGeneratorNode(openai_api_key="test-key")
+    monkeypatch.setattr(node, "client", DummyClient())
+
+    out = node(
+        {
+            "input": "统计特许学校数量",
+            StateKey.DATABASE_ID.value: "california_schools",
+            StateKey.REWRITE_QUERY.value: "统计特许学校数量",
+            StateKey.TABLE_RELATION.value: schema.model_dump(by_alias=True),
+        }
+    )
+    assert "SELECT" in out[StateKey.SQL_GENERATION_RESULT.value]
+    system_prompt = captured_messages[0][0]["content"]
+    assert "frpm.Charter School (Y/N)" in system_prompt
+    assert "'1' = 是 / 特许学校" in system_prompt
+
+
 @pytest.mark.asyncio
 async def test_full_pipeline_with_sql_generate_and_execute():
     """

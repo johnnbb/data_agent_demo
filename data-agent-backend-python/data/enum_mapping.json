@@ -1,0 +1,122 @@
+{
+  "california_schools": {
+    "frpm": {
+      "Charter School (Y/N)": {
+        "description": "是否为特许学校标记",
+        "mappings": {
+          "1": "是 / 特许学校 (Charter School / Yes)",
+          "0": "否 / 非特许学校 (Non-Charter School / No)"
+        }
+      },
+      "Charter Funding Type": {
+        "description": "特许学校拨款方式",
+        "mappings": {
+          "Directly funded": "直接拨款 (Directly funded)",
+          "Locally funded": "地方拨款 (Locally funded)",
+          "Not in CS funding model": "不在特许学校拨款模式中"
+        }
+      },
+      "Educational Option Type": {
+        "description": "教育办学类型",
+        "mappings": {
+          "Traditional": "传统公立学校",
+          "Continuation School": "延续教育学校 (Continuation school)",
+          "Alternative School of Choice": "择校类替代学校",
+          "Charter School": "特许学校",
+          "County Community School": "县级社区学校",
+          "Juvenile Court School": "少年法庭学校",
+          "Community Day School": "社区日校",
+          "Special Education School": "特殊教育学校",
+          "State Special School": "州立特殊学校",
+          "Opportunity School": "机会学校",
+          "Home and Hospital": "居家与医院教学",
+          "Youth Authority School": "青少年管教学校",
+          "District Special Education Consortia School": "学区特殊教育联合学校"
+        }
+      },
+      "NSLP Provision Status": {
+        "description": "全国学校午餐计划 (NSLP) 供应条款状态",
+        "mappings": {
+          "CEP": "社区资格条款 (Community Eligibility Provision)",
+          "Provision 1": "条款 1",
+          "Provision 2": "条款 2",
+          "Provision 3": "条款 3",
+          "Breakfast Provision 2": "早餐条款 2",
+          "Lunch Provision 2": "午餐条款 2",
+          "Multiple Provision Types": "多种条款组合"
+        }
+      }
+    },
+    "schools": {
+      "Charter": {
+        "description": "是否为特许学校标记",
+        "mappings": {
+          "1": "是 / 特许学校 (Charter / Yes)",
+          "0": "否 / 非特许学校 (Non-Charter / No)"
+        }
+      },
+      "Magnet": {
+        "description": "是否为磁石学校 (特色专长公立学校) 标记",
+        "mappings": {
+          "1": "是 / 磁石学校 (Magnet / Yes)",
+          "0": "否 / 非磁石学校 (Non-Magnet / No)"
+        }
+      },
+      "StatusType": {
+        "description": "学校运营状态",
+        "mappings": {
+          "Active": "在营 / 正常开放 (Active / Open)",
+          "Closed": "已关闭 (Closed)",
+          "Merged": "已合并 (Merged)",
+          "Pending": "待审批 / 待定 (Pending)"
+        }
+      },
+      "FundingType": {
+        "description": "学校拨款方式",
+        "mappings": {
+          "Directly funded": "直接拨款 (Directly funded)",
+          "Locally funded": "地方拨款 (Locally funded)",
+          "Not in CS funding model": "不在特许学校拨款模式中"
+        }
+      }
+    }
+  },
+  "debit_card_specializing": {
+    "customers": {
+      "Segment": {
+        "description": "客户分层等级",
+        "mappings": {
+          "SME": "中小企业客户 (Small and Medium Enterprise)",
+          "LAM": "大型客户 (Large Account)",
+          "KAM": "重点大客户 (Key Account)"
+        }
+      },
+      "Currency": {
+        "description": "结算币种",
+        "mappings": {
+          "CZK": "捷克克朗 (Czech Koruna)",
+          "EUR": "欧元 (Euro)"
+        }
+      }
+    },
+    "gasstations": {
+      "Country": {
+        "description": "加油站/门店所在国家编码",
+        "mappings": {
+          "CZE": "捷克 (Czech Republic)",
+          "SVK": "斯洛伐克 (Slovakia)"
+        }
+      },
+      "Segment": {
+        "description": "加油站/门店定位档次",
+        "mappings": {
+          "Premium": "高端门店",
+          "Value for money": "高性价比门店",
+          "Discount": "折扣门店",
+          "Noname": "无品牌门店",
+          "Other": "其他门店"
+        }
+      }
+    }
+  }
+}

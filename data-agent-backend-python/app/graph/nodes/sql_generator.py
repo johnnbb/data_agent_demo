@@ -7,6 +7,7 @@ from app.config import settings
 from app.graph.state import AgentState
 from app.graph.spec import StateKey
 from app.graph.plan_models import Plan
+from app.retrieval.enum_rules import format_semantic_enum_rules
 from app.retrieval.schema_models import Schema
 from app.prompts.manager import prompt_manager
 
@@ -73,6 +74,7 @@ class SqlGeneratorNode:
 
         # 2. 提取 Schema 与背景知识
         schema_data = state.get(StateKey.TABLE_RELATION.value)
+        schema_obj: Optional[Schema] = None
         if isinstance(schema_data, dict):
             schema_obj = Schema.model_validate(schema_data)
             scheme_prompt = schema_obj.build_scheme_prompt()
@@ -84,6 +86,12 @@ class SqlGeneratorNode:
                 scheme_prompt = schema_data
         else:
             scheme_prompt = "【无表结构】"
+
+        database_id = (
+            state.get(StateKey.DATABASE_ID.value)
+            or (schema_obj.database_id if schema_obj is not None else "")
+        )
+        semantic_enum_rules = format_semantic_enum_rules(database_id, schema_obj)
 
         rewrite_query = state.get(StateKey.REWRITE_QUERY.value) or state.get("input", "")
         evidence = state.get(StateKey.EVIDENCE.value, "")
@@ -116,7 +124,7 @@ class SqlGeneratorNode:
                 schema_info=scheme_prompt,
                 evidence=evidence,
                 semantic_lookup_rules="(无)",
-                semantic_enum_rules="(无)",
+                semantic_enum_rules=semantic_enum_rules,
                 execution_description=instruction,
             )
             user_prompt = "请只输出纯 SQL 查询语句，不要包含任何解释或额外文字。"

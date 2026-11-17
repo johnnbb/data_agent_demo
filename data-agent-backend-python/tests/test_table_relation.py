@@ -126,6 +126,10 @@ def test_sample_column_examples_and_schema_prompt_roundtrip():
     examples = node.sample_column_examples("california_schools", [frpm_table])
     assert "frpm" in examples
     assert "'Directly funded'" in examples["frpm"]["Charter Funding Type"]
+    # 验证低基数枚举列（12 个去重值 <= 15）不再被 rows[:5] 截断，包含第 6 项 'Continuation School'
+    ed_options = examples["frpm"]["Educational Option Type"]
+    assert len(ed_options) == 12
+    assert "'Continuation School'" in ed_options
 
     schema_obj = Schema(
         database_id="california_schools",

@@ -142,3 +142,18 @@ Executed after all code and prompt updates:
 .venv/bin/pytest tests/test_plan_execute_and_human_feedback.py tests/test_sql_generate_and_execute.py tests/test_table_relation.py tests/test_evidence_recall.py eval/test_score.py -k "not full_pipeline and not graph and not node_full_pipeline" -v
 ```
 - **Result**: **`24 passed, 4 deselected`** (independently verified by `verifier`), confirming zero regressions from leave-one-out hooks, low-cardinality sampling, glossary `top_k=8`, SQL timeout guard, and `100%` AST write-operation interception (`test_validate_sql_ast_security_interception`).
+
+---
+
+## 7. Post-Report Bugfix & Remediation Log (2026-11-17)
+
+Following the residual failure analysis in Section 5.2/5.3, two targeted fixes were implemented and verified via unit/regression tests (note: the quantitative E2E LLM benchmark tables in Sections 2–4 remain the pre-fix baseline snapshot until a full E2E re-run is executed):
+
+1. **Fix Low-Cardinality Enum Truncation (`5 -> 15`) in `TableRelationNode`** (`app/graph/nodes/table_relation.py`):
+   - **Root Cause Identified in Section 5.2**: `sample_column_examples` queried `LIMIT 16` to detect low-cardinality columns (`1 <= len(rows) <= 15`), but truncated `rows[:5]` when populating `examplesByTableCol`. In `california_schools`, `frpm."Educational Option Type"` has 12 distinct values and `'Continuation School'` sits at index 5 (6th item), causing Q1's valid literal to be omitted and triggering feasibility false rejection.
+   - **Fix**: Widened the low-cardinality sample cap from `rows[:5]` to `rows[:15]` (retaining all distinct values up to 15, while keeping `rows[:2]` for high-cardinality columns `> 15`). Verified in `tests/test_table_relation.py::test_sample_column_examples_and_schema_prompt_roundtrip` (`len(ed_options) == 12`, including `'Continuation School'`).
+2. **Wire `semantic_enum_rules` Dictionary into `SqlGeneratorNode`** (`data/enum_mapping.json`, `app/retrieval/enum_rules.py`, `app/graph/nodes/sql_generator.py`):
+   - **Root Cause**: `app/prompts/new-sql-generate.st` already reserved `{semantic_enum_rules}` to translate natural-language/Chinese business terms (e.g., `"是/否"`, `"特许学校"`, `"中小企业/大客户"`) into database codes, but `SqlGeneratorNode` previously passed hardcoded `"(无)"`.
+   - **Fix**: Added structured enum semantic mapping config (`data/enum_mapping.json`) for `california_schools` and `debit_card_specializing` and helper `format_semantic_enum_rules(database_id, schema)`, filtering rules strictly to tables and columns present in the recalled `Schema` (falling back to `"(无)"` when unmatched). Wired into `SqlGeneratorNode` and verified offline in `tests/test_sql_generate_and_execute.py::test_format_semantic_enum_rules_and_sql_generator_injection`.
+3. **Post-Fix Regression Check**:
+   - Re-ran `.venv/bin/pytest tests/test_plan_execute_and_human_feedback.py tests/test_sql_generate_and_execute.py tests/test_table_relation.py tests/test_evidence_recall.py eval/test_score.py -k "not full_pipeline and not graph and not node_full_pipeline" -v` → **`25 passed, 4 deselected`** in `12.27s`.

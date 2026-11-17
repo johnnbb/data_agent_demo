@@ -345,7 +345,7 @@ class TableRelationNode:
                     if not rows:
                         continue
                     if 1 <= len(rows) <= 15:
-                        samples = [f"'{str(r[0])[:50]}'" for r in rows[:5]]
+                        samples = [f"'{str(r[0])[:50]}'" for r in rows[:15]]
                     else:
                         samples = [f"'{str(r[0])[:30]}'" for r in rows[:2]]
                     if samples:
